@@ -35,7 +35,7 @@ export class SaveManager {
       loadInProgress: false,
       gameData: null,
       saveSlots: new Map(),
-      autoSaveTimer: null
+      autoSaveTimer: null,
     };
 
     // Save configuration
@@ -44,7 +44,7 @@ export class SaveManager {
       autoSaveFrequency: 300000, // 5 minutes
       saveDataVersion: '1.0.0',
       compressionEnabled: true,
-      encryptionEnabled: false
+      encryptionEnabled: false,
     };
 
     // Set up event handlers
@@ -65,7 +65,7 @@ export class SaveManager {
       this.saveSystem = new SaveSystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
+        config: this.config,
       });
       await this.saveSystem.initialize();
     }
@@ -122,11 +122,17 @@ export class SaveManager {
 
     // Player events
     this.eventBus.on('player:levelUp', this.handlePlayerLevelUp.bind(this));
-    this.eventBus.on('player:itemCollected', this.handlePlayerItemCollected.bind(this));
+    this.eventBus.on(
+      'player:itemCollected',
+      this.handlePlayerItemCollected.bind(this)
+    );
     this.eventBus.on('player:areaEnter', this.handlePlayerAreaEnter.bind(this));
 
     // Combat events
-    this.eventBus.on('combat:enemyDefeated', this.handleEnemyDefeated.bind(this));
+    this.eventBus.on(
+      'combat:enemyDefeated',
+      this.handleEnemyDefeated.bind(this)
+    );
 
     // Quest events
     this.eventBus.on('quest:completed', this.handleQuestCompleted.bind(this));
@@ -141,17 +147,50 @@ export class SaveManager {
    * Remove event handlers
    */
   removeEventHandlers() {
-    this.eventBus.removeListener('game:started', this.handleGameStarted.bind(this));
-    this.eventBus.removeListener('game:paused', this.handleGamePaused.bind(this));
-    this.eventBus.removeListener('game:resumed', this.handleGameResumed.bind(this));
-    this.eventBus.removeListener('game:stopped', this.handleGameStopped.bind(this));
-    this.eventBus.removeListener('player:levelUp', this.handlePlayerLevelUp.bind(this));
-    this.eventBus.removeListener('player:itemCollected', this.handlePlayerItemCollected.bind(this));
-    this.eventBus.removeListener('player:areaEnter', this.handlePlayerAreaEnter.bind(this));
-    this.eventBus.removeListener('combat:enemyDefeated', this.handleEnemyDefeated.bind(this));
-    this.eventBus.removeListener('quest:completed', this.handleQuestCompleted.bind(this));
-    this.eventBus.removeListener('save:request', this.handleSaveRequest.bind(this));
-    this.eventBus.removeListener('load:request', this.handleLoadRequest.bind(this));
+    this.eventBus.removeListener(
+      'game:started',
+      this.handleGameStarted.bind(this)
+    );
+    this.eventBus.removeListener(
+      'game:paused',
+      this.handleGamePaused.bind(this)
+    );
+    this.eventBus.removeListener(
+      'game:resumed',
+      this.handleGameResumed.bind(this)
+    );
+    this.eventBus.removeListener(
+      'game:stopped',
+      this.handleGameStopped.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:levelUp',
+      this.handlePlayerLevelUp.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:itemCollected',
+      this.handlePlayerItemCollected.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:areaEnter',
+      this.handlePlayerAreaEnter.bind(this)
+    );
+    this.eventBus.removeListener(
+      'combat:enemyDefeated',
+      this.handleEnemyDefeated.bind(this)
+    );
+    this.eventBus.removeListener(
+      'quest:completed',
+      this.handleQuestCompleted.bind(this)
+    );
+    this.eventBus.removeListener(
+      'save:request',
+      this.handleSaveRequest.bind(this)
+    );
+    this.eventBus.removeListener(
+      'load:request',
+      this.handleLoadRequest.bind(this)
+    );
     this.eventBus.removeListener('save:auto', this.handleAutoSave.bind(this));
   }
 
@@ -179,16 +218,16 @@ export class SaveManager {
       const success = await this.saveSystem.saveGame(slotNumber, saveData, {
         saveType: 'manual',
         compressionEnabled: this.saveConfig.compressionEnabled,
-        encryptionEnabled: this.saveConfig.encryptionEnabled
+        encryptionEnabled: this.saveConfig.encryptionEnabled,
       });
 
       if (success) {
         this.state.currentSlot = slotNumber;
         this.updateSaveSlotInfo(slotNumber, saveData);
-        
+
         this.eventBus.emit('save:completed', {
           slotNumber: slotNumber,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
 
         this.logger.info(`Game saved to slot ${slotNumber}`);
@@ -197,11 +236,11 @@ export class SaveManager {
       return success;
     } catch (error) {
       this.logger.error('Failed to save game:', error);
-      
+
       this.eventBus.emit('save:failed', {
         slotNumber: slotNumber,
         error: error.message,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       return false;
@@ -232,7 +271,7 @@ export class SaveManager {
         this.eventBus.emit('load:completed', {
           slotNumber: slotNumber,
           gameData: gameData,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
 
         this.logger.info(`Game loaded from slot ${slotNumber}`);
@@ -241,11 +280,11 @@ export class SaveManager {
       return gameData;
     } catch (error) {
       this.logger.error('Failed to load game:', error);
-      
+
       this.eventBus.emit('load:failed', {
         slotNumber: slotNumber,
         error: error.message,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       return null;
@@ -260,13 +299,13 @@ export class SaveManager {
   async deleteSave(slotNumber) {
     try {
       const success = await this.saveSystem.deleteSave(slotNumber);
-      
+
       if (success) {
         this.state.saveSlots.delete(slotNumber);
-        
+
         this.eventBus.emit('save:deleted', {
           slotNumber: slotNumber,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
 
         this.logger.info(`Save slot ${slotNumber} deleted`);
@@ -283,15 +322,17 @@ export class SaveManager {
    * Get save slot info
    */
   getSaveSlotInfo(slotNumber) {
-    return this.state.saveSlots.get(slotNumber) || {
-      slotNumber: slotNumber,
-      exists: false,
-      timestamp: 0,
-      size: 0,
-      level: 0,
-      score: 0,
-      playTime: 0
-    };
+    return (
+      this.state.saveSlots.get(slotNumber) || {
+        slotNumber: slotNumber,
+        exists: false,
+        timestamp: 0,
+        size: 0,
+        level: 0,
+        score: 0,
+        playTime: 0,
+      }
+    );
   }
 
   /**
@@ -321,9 +362,9 @@ export class SaveManager {
         userAgent: navigator.userAgent,
         screenResolution: {
           width: screen.width,
-          height: screen.height
-        }
-      }
+          height: screen.height,
+        },
+      },
     };
   }
 
@@ -338,7 +379,7 @@ export class SaveManager {
       size: JSON.stringify(saveData).length,
       level: saveData.gameState?.currentLevel || 0,
       score: saveData.gameState?.score || 0,
-      playTime: saveData.stats?.playTime || 0
+      playTime: saveData.stats?.playTime || 0,
     });
   }
 
@@ -348,7 +389,7 @@ export class SaveManager {
   async loadSaveSlots() {
     try {
       const saveSlots = this.saveSystem.getAllSaveSlots();
-      
+
       for (const slot of saveSlots) {
         this.state.saveSlots.set(slot.slotNumber, {
           slotNumber: slot.slotNumber,
@@ -357,7 +398,7 @@ export class SaveManager {
           size: slot.size,
           level: slot.metadata?.level || 0,
           score: slot.metadata?.score || 0,
-          playTime: slot.metadata?.playTime || 0
+          playTime: slot.metadata?.playTime || 0,
         });
       }
 
@@ -405,7 +446,10 @@ export class SaveManager {
       // Find next available auto-save slot
       let autoSaveSlot = 0;
       for (let i = 1; i <= this.saveConfig.maxAutoSaveSlots; i++) {
-        if (!this.state.saveSlots.has(i) || !this.state.saveSlots.get(i).exists) {
+        if (
+          !this.state.saveSlots.has(i) ||
+          !this.state.saveSlots.get(i).exists
+        ) {
           autoSaveSlot = i;
           break;
         }
@@ -446,9 +490,9 @@ export class SaveManager {
     try {
       const currentState = {
         state: this.state,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
+
       localStorage.setItem('saveManagerState', JSON.stringify(currentState));
     } catch (error) {
       this.logger.error('Failed to save current state:', error);
@@ -531,7 +575,7 @@ export class SaveManager {
    */
   setAutoSaveEnabled(enabled) {
     this.state.autoSaveEnabled = enabled;
-    
+
     if (enabled) {
       this.startAutoSave();
     } else {
@@ -544,7 +588,7 @@ export class SaveManager {
    */
   setAutoSaveInterval(interval) {
     this.state.autoSaveInterval = interval;
-    
+
     if (this.state.autoSaveEnabled) {
       this.stopAutoSave();
       this.startAutoSave();

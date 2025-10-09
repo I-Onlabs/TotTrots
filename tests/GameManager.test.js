@@ -10,7 +10,14 @@
  * - Score management
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest,
+} from '@jest/globals';
 import { GameManager } from '../src/managers/GameManager.js';
 
 // Mock dependencies
@@ -18,19 +25,19 @@ const mockEventBus = {
   on: jest.fn(),
   off: jest.fn(),
   emit: jest.fn(),
-  removeListener: jest.fn()
+  removeListener: jest.fn(),
 };
 
 const mockLogger = {
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
-  debug: jest.fn()
+  debug: jest.fn(),
 };
 
 const mockConfig = {
   debug: false,
-  maxLevel: 10
+  maxLevel: 10,
 };
 
 describe('GameManager', () => {
@@ -38,11 +45,11 @@ describe('GameManager', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     gameManager = new GameManager({
       eventBus: mockEventBus,
       logger: mockLogger,
-      config: mockConfig
+      config: mockConfig,
     });
   });
 
@@ -74,10 +81,22 @@ describe('GameManager', () => {
     });
 
     it('should set up event handlers', () => {
-      expect(mockEventBus.on).toHaveBeenCalledWith('player:scoreChanged', expect.any(Function));
-      expect(mockEventBus.on).toHaveBeenCalledWith('player:damaged', expect.any(Function));
-      expect(mockEventBus.on).toHaveBeenCalledWith('player:itemCollected', expect.any(Function));
-      expect(mockEventBus.on).toHaveBeenCalledWith('player:levelCompleted', expect.any(Function));
+      expect(mockEventBus.on).toHaveBeenCalledWith(
+        'player:scoreChanged',
+        expect.any(Function)
+      );
+      expect(mockEventBus.on).toHaveBeenCalledWith(
+        'player:damaged',
+        expect.any(Function)
+      );
+      expect(mockEventBus.on).toHaveBeenCalledWith(
+        'player:itemCollected',
+        expect.any(Function)
+      );
+      expect(mockEventBus.on).toHaveBeenCalledWith(
+        'player:levelCompleted',
+        expect.any(Function)
+      );
     });
   });
 
@@ -85,14 +104,20 @@ describe('GameManager', () => {
     it('should initialize correctly', async () => {
       await gameManager.initialize();
 
-      expect(mockLogger.info).toHaveBeenCalledWith('Initializing GameManager...');
-      expect(mockLogger.info).toHaveBeenCalledWith('GameManager initialized successfully');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Initializing GameManager...'
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'GameManager initialized successfully'
+      );
     });
 
     it('should cleanup correctly', () => {
       gameManager.cleanup();
 
-      expect(mockLogger.info).toHaveBeenCalledWith('Cleaning up GameManager...');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Cleaning up GameManager...'
+      );
       expect(mockEventBus.removeListener).toHaveBeenCalled();
     });
   });
@@ -100,17 +125,20 @@ describe('GameManager', () => {
   describe('Game State Management', () => {
     it('should handle score changes', () => {
       const scoreData = { scoreChange: 100 };
-      
+
       gameManager.handleScoreChange(scoreData);
 
       expect(gameManager.state.score).toBe(100);
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:scoreUpdated', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:scoreUpdated',
+        expect.any(Object)
+      );
     });
 
     it('should update high score when score exceeds it', () => {
       gameManager.state.highScore = 50;
       const scoreData = { scoreChange: 100 };
-      
+
       gameManager.handleScoreChange(scoreData);
 
       expect(gameManager.state.highScore).toBe(100);
@@ -118,30 +146,38 @@ describe('GameManager', () => {
 
     it('should handle player damage', () => {
       const damageData = { damage: 1 };
-      
+
       gameManager.handlePlayerDamaged(damageData);
 
       expect(gameManager.state.lives).toBe(2);
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:livesUpdated', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:livesUpdated',
+        expect.any(Object)
+      );
     });
 
     it('should trigger game over when lives reach zero', () => {
       gameManager.state.lives = 1;
       const damageData = { damage: 1 };
-      
+
       gameManager.handlePlayerDamaged(damageData);
 
       expect(gameManager.state.gameOver).toBe(true);
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:gameOver', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:gameOver',
+        expect.any(Object)
+      );
     });
 
     it('should handle item collection', () => {
       const itemData = { itemType: 'health_potion', scoreValue: 50 };
-      
+
       gameManager.handleItemCollected(itemData);
 
       expect(gameManager.state.score).toBe(50);
-      expect(mockLogger.info).toHaveBeenCalledWith('Item collected: health_potion, +50 points');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Item collected: health_potion, +50 points'
+      );
     });
   });
 
@@ -149,49 +185,61 @@ describe('GameManager', () => {
     it('should complete level when score target is reached', () => {
       gameManager.state.currentLevel = 1;
       gameManager.state.score = 900; // Below target
-      
+
       const scoreData = { scoreChange: 200 }; // Should reach 1000 target
       gameManager.handleScoreChange(scoreData);
 
       expect(gameManager.state.levelCompleted).toBe(true);
-      expect(mockEventBus.emit).toHaveBeenCalledWith('level:completed', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'level:completed',
+        expect.any(Object)
+      );
     });
 
     it('should advance to next level after completion', () => {
       gameManager.state.currentLevel = 1;
       gameManager.state.levelCompleted = true;
-      
+
       // Mock setTimeout
       jest.useFakeTimers();
-      
+
       gameManager.completeLevel();
-      
-      expect(mockEventBus.emit).toHaveBeenCalledWith('level:completed', expect.any(Object));
-      
+
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'level:completed',
+        expect.any(Object)
+      );
+
       jest.advanceTimersByTime(2000);
-      
+
       expect(gameManager.state.currentLevel).toBe(2);
       expect(gameManager.state.levelCompleted).toBe(false);
-      
+
       jest.useRealTimers();
     });
 
     it('should complete game when max level is reached', () => {
       gameManager.state.currentLevel = 10;
       gameManager.state.score = 1000;
-      
+
       gameManager.completeLevel();
 
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:completed', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:completed',
+        expect.any(Object)
+      );
     });
 
     it('should handle level timeout', () => {
       gameManager.state.currentLevel = 1;
       gameManager.state.levelStartTime = Date.now() - 70000; // 70 seconds ago
-      
+
       gameManager.handleLevelTimeout();
 
-      expect(mockEventBus.emit).toHaveBeenCalledWith('level:timeout', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'level:timeout',
+        expect.any(Object)
+      );
       expect(gameManager.state.lives).toBe(2); // Should lose a life
     });
   });
@@ -201,9 +249,9 @@ describe('GameManager', () => {
       const achievementData = {
         name: 'Test Achievement',
         bonusScore: 100,
-        effects: { extraLives: 1 }
+        effects: { extraLives: 1 },
       };
-      
+
       gameManager.handleAchievementUnlock(achievementData);
 
       expect(gameManager.state.score).toBe(100);
@@ -213,9 +261,9 @@ describe('GameManager', () => {
     it('should apply achievement effects', () => {
       const effects = {
         extraLives: 2,
-        scoreMultiplier: 1.5
+        scoreMultiplier: 1.5,
       };
-      
+
       gameManager.applyAchievementEffects(effects);
 
       expect(gameManager.state.lives).toBe(5); // 3 + 2
@@ -228,24 +276,30 @@ describe('GameManager', () => {
       const challengeData = {
         name: 'Test Challenge',
         bonusScore: 200,
-        effects: { temporaryPowerUp: 'speed_boost' }
+        effects: { temporaryPowerUp: 'speed_boost' },
       };
-      
+
       gameManager.handleDailyChallengeCompletion(challengeData);
 
       expect(gameManager.state.score).toBe(200);
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:powerUpActivated', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:powerUpActivated',
+        expect.any(Object)
+      );
     });
 
     it('should apply challenge effects', () => {
       const effects = {
         temporaryPowerUp: 'damage_boost',
-        duration: 30000
+        duration: 30000,
       };
-      
+
       gameManager.applyChallengeEffects(effects);
 
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:powerUpActivated', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:powerUpActivated',
+        expect.any(Object)
+      );
     });
   });
 
@@ -255,25 +309,30 @@ describe('GameManager', () => {
       gameManager.state.score = 1000;
       gameManager.state.lives = 1;
       gameManager.state.highScore = 2000;
-      
+
       gameManager.restartGame();
 
       expect(gameManager.state.currentLevel).toBe(1);
       expect(gameManager.state.score).toBe(0);
       expect(gameManager.state.lives).toBe(3);
       expect(gameManager.state.highScore).toBe(2000); // Should keep high score
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:restarted', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:restarted',
+        expect.any(Object)
+      );
     });
   });
 
   describe('Configuration Management', () => {
     it('should handle config changes', () => {
       const newConfig = { debug: true };
-      
+
       gameManager.handleConfigChange({ config: newConfig });
 
       expect(gameManager.config).toEqual({ ...mockConfig, ...newConfig });
-      expect(mockLogger.info).toHaveBeenCalledWith('GameManager config updated');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'GameManager config updated'
+      );
     });
   });
 
@@ -281,21 +340,25 @@ describe('GameManager', () => {
     it('should load game data from storage', async () => {
       const mockData = { highScore: 5000 };
       localStorage.setItem('gameData', JSON.stringify(mockData));
-      
+
       await gameManager.loadGameData();
 
       expect(gameManager.state.highScore).toBe(5000);
-      expect(mockLogger.info).toHaveBeenCalledWith('Game data loaded from storage');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Game data loaded from storage'
+      );
     });
 
     it('should save game data to storage', () => {
       gameManager.state.highScore = 3000;
-      
+
       gameManager.saveGameData();
 
       const savedData = JSON.parse(localStorage.getItem('gameData'));
       expect(savedData.highScore).toBe(3000);
-      expect(mockLogger.info).toHaveBeenCalledWith('Game data saved to storage');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Game data saved to storage'
+      );
     });
 
     it('should handle save/load errors gracefully', async () => {
@@ -304,11 +367,14 @@ describe('GameManager', () => {
       localStorage.getItem = jest.fn().mockImplementation(() => {
         throw new Error('Storage error');
       });
-      
+
       await gameManager.loadGameData();
 
-      expect(mockLogger.error).toHaveBeenCalledWith('Failed to load game data:', expect.any(Error));
-      
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to load game data:',
+        expect.any(Error)
+      );
+
       // Restore original method
       localStorage.getItem = originalGetItem;
     });
@@ -317,23 +383,23 @@ describe('GameManager', () => {
   describe('State Getters', () => {
     it('should return current game state', () => {
       const state = gameManager.getState();
-      
+
       expect(state).toEqual(gameManager.state);
       expect(state).not.toBe(gameManager.state); // Should be a copy
     });
 
     it('should return level configuration', () => {
       const levelConfig = gameManager.getLevelConfig(1);
-      
+
       expect(levelConfig).toBeDefined();
       expect(levelConfig.difficulty).toBe('easy');
     });
 
     it('should set level configuration', () => {
       const newConfig = { timeLimit: 120000, targetScore: 2000 };
-      
+
       gameManager.setLevelConfig(1, newConfig);
-      
+
       const levelConfig = gameManager.getLevelConfig(1);
       expect(levelConfig.timeLimit).toBe(120000);
       expect(levelConfig.targetScore).toBe(2000);

@@ -32,7 +32,7 @@ export class ShopSystem {
       playerCurrency: {
         coins: 1000,
         gems: 50,
-        tokens: 0
+        tokens: 0,
       },
       shopInventory: new Map(),
       playerInventory: new Map(),
@@ -42,7 +42,7 @@ export class ShopSystem {
       shopLevel: 1,
       unlockedShops: new Set(['basic']),
       dailyDeals: new Map(),
-      lastDailyReset: null
+      lastDailyReset: null,
     };
 
     // Shop configuration
@@ -53,28 +53,43 @@ export class ShopSystem {
       reputationLevels: [
         { level: 0, name: 'Novice', discount: 0 },
         { level: 1, name: 'Regular', discount: 0.05 },
-        { level: 2, name: 'Valued', discount: 0.10 },
+        { level: 2, name: 'Valued', discount: 0.1 },
         { level: 3, name: 'VIP', discount: 0.15 },
-        { level: 4, name: 'Elite', discount: 0.20 }
+        { level: 4, name: 'Elite', discount: 0.2 },
       ],
       currencyTypes: ['coins', 'gems', 'tokens'],
       shopTypes: {
         basic: {
           name: 'Basic Shop',
           level: 1,
-          items: ['health_potion', 'mana_potion', 'basic_weapon', 'basic_armor']
+          items: [
+            'health_potion',
+            'mana_potion',
+            'basic_weapon',
+            'basic_armor',
+          ],
         },
         advanced: {
           name: 'Advanced Shop',
           level: 3,
-          items: ['advanced_weapon', 'advanced_armor', 'skill_book', 'magic_item']
+          items: [
+            'advanced_weapon',
+            'advanced_armor',
+            'skill_book',
+            'magic_item',
+          ],
         },
         premium: {
           name: 'Premium Shop',
           level: 5,
-          items: ['legendary_weapon', 'legendary_armor', 'rare_gem', 'special_item']
-        }
-      }
+          items: [
+            'legendary_weapon',
+            'legendary_armor',
+            'rare_gem',
+            'special_item',
+          ],
+        },
+      },
     };
 
     // Item database
@@ -148,7 +163,7 @@ export class ShopSystem {
         effects: { health: 50 },
         description: 'Restores 50 health points',
         stackable: true,
-        maxStack: 99
+        maxStack: 99,
       },
       mana_potion: {
         id: 'mana_potion',
@@ -159,7 +174,7 @@ export class ShopSystem {
         effects: { mana: 50 },
         description: 'Restores 50 mana points',
         stackable: true,
-        maxStack: 99
+        maxStack: 99,
       },
       // Weapons
       basic_weapon: {
@@ -170,7 +185,7 @@ export class ShopSystem {
         price: { coins: 200 },
         stats: { damage: 15, speed: 1.0 },
         description: 'A basic iron sword',
-        level: 1
+        level: 1,
       },
       advanced_weapon: {
         id: 'advanced_weapon',
@@ -180,7 +195,7 @@ export class ShopSystem {
         price: { coins: 500, gems: 5 },
         stats: { damage: 25, speed: 1.2 },
         description: 'A well-crafted steel blade',
-        level: 3
+        level: 3,
       },
       legendary_weapon: {
         id: 'legendary_weapon',
@@ -190,7 +205,7 @@ export class ShopSystem {
         price: { gems: 100, tokens: 10 },
         stats: { damage: 50, speed: 1.5, critical: 0.2 },
         description: 'A legendary weapon forged in dragon fire',
-        level: 10
+        level: 10,
       },
       // Armor
       basic_armor: {
@@ -201,7 +216,7 @@ export class ShopSystem {
         price: { coins: 150 },
         stats: { defense: 10, health: 20 },
         description: 'Basic leather protection',
-        level: 1
+        level: 1,
       },
       advanced_armor: {
         id: 'advanced_armor',
@@ -211,7 +226,7 @@ export class ShopSystem {
         price: { coins: 400, gems: 3 },
         stats: { defense: 20, health: 40 },
         description: 'Sturdy chain mail armor',
-        level: 3
+        level: 3,
       },
       legendary_armor: {
         id: 'legendary_armor',
@@ -221,7 +236,7 @@ export class ShopSystem {
         price: { gems: 80, tokens: 8 },
         stats: { defense: 40, health: 100, resistance: 0.1 },
         description: 'Armor crafted from dragon scales',
-        level: 10
+        level: 10,
       },
       // Special items
       skill_book: {
@@ -232,7 +247,7 @@ export class ShopSystem {
         price: { coins: 1000, gems: 10 },
         effects: { skillPoints: 1 },
         description: 'Increases available skill points',
-        level: 5
+        level: 5,
       },
       magic_item: {
         id: 'magic_item',
@@ -242,7 +257,7 @@ export class ShopSystem {
         price: { gems: 25 },
         stats: { mana: 30, manaRegen: 0.5 },
         description: 'A ring that enhances magical abilities',
-        level: 5
+        level: 5,
       },
       rare_gem: {
         id: 'rare_gem',
@@ -252,7 +267,7 @@ export class ShopSystem {
         price: { gems: 50, tokens: 5 },
         effects: { socketable: true, power: 10 },
         description: 'A rare gem that can be socketed into equipment',
-        level: 8
+        level: 8,
       },
       special_item: {
         id: 'special_item',
@@ -262,8 +277,8 @@ export class ShopSystem {
         price: { tokens: 20 },
         effects: { special: true },
         description: 'A mysterious special item',
-        level: 10
-      }
+        level: 10,
+      },
     };
   }
 
@@ -285,11 +300,17 @@ export class ShopSystem {
 
     // Inventory events
     this.eventBus.on('inventory:itemAdded', this.handleItemAdded.bind(this));
-    this.eventBus.on('inventory:itemRemoved', this.handleItemRemoved.bind(this));
+    this.eventBus.on(
+      'inventory:itemRemoved',
+      this.handleItemRemoved.bind(this)
+    );
 
     // Player events
     this.eventBus.on('player:levelUp', this.handlePlayerLevelUp.bind(this));
-    this.eventBus.on('player:reputationChanged', this.handleReputationChanged.bind(this));
+    this.eventBus.on(
+      'player:reputationChanged',
+      this.handleReputationChanged.bind(this)
+    );
   }
 
   /**
@@ -300,14 +321,38 @@ export class ShopSystem {
     this.eventBus.removeListener('shop:close', this.handleShopClose.bind(this));
     this.eventBus.removeListener('shop:buy', this.handleBuyItem.bind(this));
     this.eventBus.removeListener('shop:sell', this.handleSellItem.bind(this));
-    this.eventBus.removeListener('shop:refresh', this.handleShopRefresh.bind(this));
-    this.eventBus.removeListener('currency:changed', this.handleCurrencyChanged.bind(this));
-    this.eventBus.removeListener('currency:earned', this.handleCurrencyEarned.bind(this));
-    this.eventBus.removeListener('currency:spent', this.handleCurrencySpent.bind(this));
-    this.eventBus.removeListener('inventory:itemAdded', this.handleItemAdded.bind(this));
-    this.eventBus.removeListener('inventory:itemRemoved', this.handleItemRemoved.bind(this));
-    this.eventBus.removeListener('player:levelUp', this.handlePlayerLevelUp.bind(this));
-    this.eventBus.removeListener('player:reputationChanged', this.handleReputationChanged.bind(this));
+    this.eventBus.removeListener(
+      'shop:refresh',
+      this.handleShopRefresh.bind(this)
+    );
+    this.eventBus.removeListener(
+      'currency:changed',
+      this.handleCurrencyChanged.bind(this)
+    );
+    this.eventBus.removeListener(
+      'currency:earned',
+      this.handleCurrencyEarned.bind(this)
+    );
+    this.eventBus.removeListener(
+      'currency:spent',
+      this.handleCurrencySpent.bind(this)
+    );
+    this.eventBus.removeListener(
+      'inventory:itemAdded',
+      this.handleItemAdded.bind(this)
+    );
+    this.eventBus.removeListener(
+      'inventory:itemRemoved',
+      this.handleItemRemoved.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:levelUp',
+      this.handlePlayerLevelUp.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:reputationChanged',
+      this.handleReputationChanged.bind(this)
+    );
   }
 
   /**
@@ -329,7 +374,7 @@ export class ShopSystem {
       shopType: shopType,
       inventory: this.getShopInventory(),
       playerCurrency: this.state.playerCurrency,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     this.logger.info(`Shop opened: ${shopType}`);
@@ -345,7 +390,7 @@ export class ShopSystem {
     this.state.cart.clear();
 
     this.eventBus.emit('shop:closed', {
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     this.logger.info('Shop closed');
@@ -385,10 +430,12 @@ export class ShopSystem {
       itemId: itemId,
       quantity: quantity,
       price: totalPrice,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
-    this.logger.info(`Bought ${quantity}x ${itemId} for ${JSON.stringify(totalPrice)}`);
+    this.logger.info(
+      `Bought ${quantity}x ${itemId} for ${JSON.stringify(totalPrice)}`
+    );
     return true;
   }
 
@@ -408,7 +455,7 @@ export class ShopSystem {
     }
 
     const sellPrice = this.calculateSellPrice(itemId, quantity);
-    
+
     // Add currency
     this.addCurrency(sellPrice);
 
@@ -419,10 +466,12 @@ export class ShopSystem {
       itemId: itemId,
       quantity: quantity,
       price: sellPrice,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
-    this.logger.info(`Sold ${quantity}x ${itemId} for ${JSON.stringify(sellPrice)}`);
+    this.logger.info(
+      `Sold ${quantity}x ${itemId} for ${JSON.stringify(sellPrice)}`
+    );
     return true;
   }
 
@@ -432,10 +481,12 @@ export class ShopSystem {
   calculatePrice(item, quantity = 1) {
     const basePrice = { ...item.price };
     const discount = this.getDiscount();
-    
+
     // Apply discount
     for (const currency in basePrice) {
-      basePrice[currency] = Math.floor(basePrice[currency] * (1 - discount) * quantity);
+      basePrice[currency] = Math.floor(
+        basePrice[currency] * (1 - discount) * quantity
+      );
     }
 
     return basePrice;
@@ -449,7 +500,7 @@ export class ShopSystem {
     if (!item) return { coins: 0 };
 
     const sellPrice = { ...item.price };
-    
+
     // Sell for 50% of buy price
     for (const currency in sellPrice) {
       sellPrice[currency] = Math.floor(sellPrice[currency] * 0.5 * quantity);
@@ -501,7 +552,7 @@ export class ShopSystem {
     this.eventBus.emit('currency:spent', {
       amount: price,
       newBalance: this.state.playerCurrency,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -516,7 +567,7 @@ export class ShopSystem {
     this.eventBus.emit('currency:earned', {
       amount: amount,
       newBalance: this.state.playerCurrency,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -525,13 +576,13 @@ export class ShopSystem {
    */
   addToPlayerInventory(itemId, quantity, itemData) {
     const existingItem = this.state.playerInventory.get(itemId);
-    
+
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
       this.state.playerInventory.set(itemId, {
         ...itemData,
-        quantity: quantity
+        quantity: quantity,
       });
     }
 
@@ -539,7 +590,7 @@ export class ShopSystem {
       itemId: itemId,
       quantity: quantity,
       item: itemData,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -551,7 +602,7 @@ export class ShopSystem {
     if (!item) return;
 
     item.quantity -= quantity;
-    
+
     if (item.quantity <= 0) {
       this.state.playerInventory.delete(itemId);
     }
@@ -559,7 +610,7 @@ export class ShopSystem {
     this.eventBus.emit('inventory:itemRemoved', {
       itemId: itemId,
       quantity: quantity,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -569,7 +620,7 @@ export class ShopSystem {
   addToShopInventory(itemId, quantity, itemData) {
     this.state.shopInventory.set(itemId, {
       ...itemData,
-      quantity: quantity
+      quantity: quantity,
     });
   }
 
@@ -581,7 +632,7 @@ export class ShopSystem {
     if (!item) return;
 
     item.quantity -= quantity;
-    
+
     if (item.quantity <= 0) {
       this.state.shopInventory.delete(itemId);
     }
@@ -592,19 +643,24 @@ export class ShopSystem {
    */
   generateShopInventory(shopType) {
     this.state.shopInventory.clear();
-    
+
     const shopConfig = this.shopConfig.shopTypes[shopType];
     if (!shopConfig) return;
 
     const availableItems = shopConfig.items;
-    const itemCount = Math.min(availableItems.length, this.shopConfig.maxShopItems);
+    const itemCount = Math.min(
+      availableItems.length,
+      this.shopConfig.maxShopItems
+    );
 
     for (let i = 0; i < itemCount; i++) {
       const itemId = availableItems[i];
       const itemData = this.itemDatabase[itemId];
-      
+
       if (itemData) {
-        const quantity = itemData.stackable ? Math.floor(Math.random() * 10) + 1 : 1;
+        const quantity = itemData.stackable
+          ? Math.floor(Math.random() * 10) + 1
+          : 1;
         this.addToShopInventory(itemId, quantity, itemData);
       }
     }
@@ -621,7 +677,7 @@ export class ShopSystem {
       this.addToShopInventory(itemId, deal.quantity, {
         ...deal.item,
         price: deal.price,
-        isDailyDeal: true
+        isDailyDeal: true,
       });
     }
   }
@@ -631,7 +687,7 @@ export class ShopSystem {
    */
   generateDailyDeals() {
     const today = new Date().toDateString();
-    
+
     if (this.state.lastDailyReset === today) {
       return; // Already generated today
     }
@@ -646,7 +702,7 @@ export class ShopSystem {
       const item = allItems[Math.floor(Math.random() * allItems.length)];
       const discount = 0.3 + Math.random() * 0.4; // 30-70% discount
       const quantity = item.stackable ? Math.floor(Math.random() * 5) + 1 : 1;
-      
+
       const dealPrice = { ...item.price };
       for (const currency in dealPrice) {
         dealPrice[currency] = Math.floor(dealPrice[currency] * discount);
@@ -656,7 +712,7 @@ export class ShopSystem {
         item: item,
         price: dealPrice,
         quantity: quantity,
-        discount: discount
+        discount: discount,
       });
     }
 
@@ -748,9 +804,9 @@ export class ShopSystem {
         reputation: this.state.reputation,
         shopLevel: this.state.shopLevel,
         unlockedShops: Array.from(this.state.unlockedShops),
-        lastDailyReset: this.state.lastDailyReset
+        lastDailyReset: this.state.lastDailyReset,
       };
-      
+
       localStorage.setItem('shopSystemData', JSON.stringify(data));
       this.logger.info('Shop data saved');
     } catch (error) {
@@ -780,7 +836,10 @@ export class ShopSystem {
   }
 
   handleCurrencyChanged(data) {
-    this.state.playerCurrency = { ...this.state.playerCurrency, ...data.currency };
+    this.state.playerCurrency = {
+      ...this.state.playerCurrency,
+      ...data.currency,
+    };
   }
 
   handleCurrencyEarned(data) {
@@ -805,7 +864,7 @@ export class ShopSystem {
       this.state.unlockedShops.add('advanced');
       this.logger.info('Advanced shop unlocked');
     }
-    
+
     if (data.level >= 5 && !this.state.unlockedShops.has('premium')) {
       this.state.unlockedShops.add('premium');
       this.logger.info('Premium shop unlocked');

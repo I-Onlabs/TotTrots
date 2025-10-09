@@ -44,7 +44,7 @@ export class GameScene {
       effects: new Map(),
       background: null,
       camera: null,
-      ui: null
+      ui: null,
     };
 
     // Scene configuration
@@ -58,7 +58,7 @@ export class GameScene {
       physicsEnabled: true,
       collisionEnabled: true,
       soundEnabled: true,
-      particlesEnabled: true
+      particlesEnabled: true,
     };
 
     // Game objects
@@ -73,7 +73,7 @@ export class GameScene {
       collision: null,
       audio: null,
       particles: null,
-      ai: null
+      ai: null,
     };
 
     // Set up event handlers
@@ -199,12 +199,18 @@ export class GameScene {
 
     // Game events
     this.eventBus.on('game:levelChanged', this.handleLevelChanged.bind(this));
-    this.eventBus.on('game:difficultyChanged', this.handleDifficultyChanged.bind(this));
+    this.eventBus.on(
+      'game:difficultyChanged',
+      this.handleDifficultyChanged.bind(this)
+    );
 
     // Player events
     this.eventBus.on('player:spawned', this.handlePlayerSpawned.bind(this));
     this.eventBus.on('player:destroyed', this.handlePlayerDestroyed.bind(this));
-    this.eventBus.on('player:positionChanged', this.handlePlayerPositionChanged.bind(this));
+    this.eventBus.on(
+      'player:positionChanged',
+      this.handlePlayerPositionChanged.bind(this)
+    );
 
     // Enemy events
     this.eventBus.on('enemy:spawned', this.handleEnemySpawned.bind(this));
@@ -225,23 +231,71 @@ export class GameScene {
    * Remove event handlers
    */
   removeEventHandlers() {
-    this.eventBus.removeListener('scene:activate', this.handleSceneActivate.bind(this));
-    this.eventBus.removeListener('scene:deactivate', this.handleSceneDeactivate.bind(this));
-    this.eventBus.removeListener('scene:pause', this.handleScenePause.bind(this));
-    this.eventBus.removeListener('scene:resume', this.handleSceneResume.bind(this));
-    this.eventBus.removeListener('game:levelChanged', this.handleLevelChanged.bind(this));
-    this.eventBus.removeListener('game:difficultyChanged', this.handleDifficultyChanged.bind(this));
-    this.eventBus.removeListener('player:spawned', this.handlePlayerSpawned.bind(this));
-    this.eventBus.removeListener('player:destroyed', this.handlePlayerDestroyed.bind(this));
-    this.eventBus.removeListener('player:positionChanged', this.handlePlayerPositionChanged.bind(this));
-    this.eventBus.removeListener('enemy:spawned', this.handleEnemySpawned.bind(this));
-    this.eventBus.removeListener('enemy:destroyed', this.handleEnemyDestroyed.bind(this));
-    this.eventBus.removeListener('item:spawned', this.handleItemSpawned.bind(this));
-    this.eventBus.removeListener('item:collected', this.handleItemCollected.bind(this));
-    this.eventBus.removeListener('input:keydown', this.handleKeyDown.bind(this));
+    this.eventBus.removeListener(
+      'scene:activate',
+      this.handleSceneActivate.bind(this)
+    );
+    this.eventBus.removeListener(
+      'scene:deactivate',
+      this.handleSceneDeactivate.bind(this)
+    );
+    this.eventBus.removeListener(
+      'scene:pause',
+      this.handleScenePause.bind(this)
+    );
+    this.eventBus.removeListener(
+      'scene:resume',
+      this.handleSceneResume.bind(this)
+    );
+    this.eventBus.removeListener(
+      'game:levelChanged',
+      this.handleLevelChanged.bind(this)
+    );
+    this.eventBus.removeListener(
+      'game:difficultyChanged',
+      this.handleDifficultyChanged.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:spawned',
+      this.handlePlayerSpawned.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:destroyed',
+      this.handlePlayerDestroyed.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:positionChanged',
+      this.handlePlayerPositionChanged.bind(this)
+    );
+    this.eventBus.removeListener(
+      'enemy:spawned',
+      this.handleEnemySpawned.bind(this)
+    );
+    this.eventBus.removeListener(
+      'enemy:destroyed',
+      this.handleEnemyDestroyed.bind(this)
+    );
+    this.eventBus.removeListener(
+      'item:spawned',
+      this.handleItemSpawned.bind(this)
+    );
+    this.eventBus.removeListener(
+      'item:collected',
+      this.handleItemCollected.bind(this)
+    );
+    this.eventBus.removeListener(
+      'input:keydown',
+      this.handleKeyDown.bind(this)
+    );
     this.eventBus.removeListener('input:keyup', this.handleKeyUp.bind(this));
-    this.eventBus.removeListener('input:mousedown', this.handleMouseDown.bind(this));
-    this.eventBus.removeListener('input:mouseup', this.handleMouseUp.bind(this));
+    this.eventBus.removeListener(
+      'input:mousedown',
+      this.handleMouseDown.bind(this)
+    );
+    this.eventBus.removeListener(
+      'input:mouseup',
+      this.handleMouseUp.bind(this)
+    );
   }
 
   /**
@@ -253,7 +307,7 @@ export class GameScene {
       this.systems.physics = new PhysicsSystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
+        config: this.config,
       });
       await this.systems.physics.initialize();
     }
@@ -263,7 +317,7 @@ export class GameScene {
       this.systems.collision = new CollisionSystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
+        config: this.config,
       });
       await this.systems.collision.initialize();
     }
@@ -273,7 +327,7 @@ export class GameScene {
       this.systems.audio = new AudioSystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
+        config: this.config,
       });
       await this.systems.audio.initialize();
     }
@@ -283,7 +337,7 @@ export class GameScene {
       this.systems.particles = new ParticleSystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
+        config: this.config,
       });
       await this.systems.particles.initialize();
     }
@@ -292,7 +346,7 @@ export class GameScene {
     this.systems.ai = new AISystem({
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
     await this.systems.ai.initialize();
   }
@@ -305,7 +359,7 @@ export class GameScene {
     this.state.background = new Background({
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
     await this.state.background.initialize();
 
@@ -313,7 +367,7 @@ export class GameScene {
     this.state.player = new Player({
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
     await this.state.player.initialize();
   }
@@ -325,7 +379,7 @@ export class GameScene {
     this.state.ui = new GameUI({
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
     await this.state.ui.initialize();
   }
@@ -337,7 +391,7 @@ export class GameScene {
     this.state.camera = new Camera({
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
     await this.state.camera.initialize();
   }
@@ -519,11 +573,11 @@ export class GameScene {
     const id = obj.id || this.generateId();
     obj.id = id;
     this.gameObjects.set(id, obj);
-    
+
     this.eventBus.emit('gameObject:added', {
       id: id,
       object: obj,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -534,11 +588,11 @@ export class GameScene {
     const obj = this.gameObjects.get(id);
     if (obj) {
       this.gameObjects.delete(id);
-      
+
       this.eventBus.emit('gameObject:removed', {
         id: id,
         object: obj,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
   }
@@ -550,11 +604,11 @@ export class GameScene {
     const id = enemy.id || this.generateId();
     enemy.id = id;
     this.enemies.set(id, enemy);
-    
+
     this.eventBus.emit('enemy:spawned', {
       id: id,
       enemy: enemy,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -565,11 +619,11 @@ export class GameScene {
     const enemy = this.enemies.get(id);
     if (enemy) {
       this.enemies.delete(id);
-      
+
       this.eventBus.emit('enemy:destroyed', {
         id: id,
         enemy: enemy,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
   }
@@ -581,11 +635,11 @@ export class GameScene {
     const id = item.id || this.generateId();
     item.id = id;
     this.items.set(id, item);
-    
+
     this.eventBus.emit('item:spawned', {
       id: id,
       item: item,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -596,11 +650,11 @@ export class GameScene {
     const item = this.items.get(id);
     if (item) {
       this.items.delete(id);
-      
+
       this.eventBus.emit('item:destroyed', {
         id: id,
         item: item,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
   }
@@ -744,14 +798,14 @@ export class GameScene {
       damage: enemy.damage || 1,
       source: 'enemy',
       enemy: enemy,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
   handlePlayerItemCollision(player, item) {
     this.eventBus.emit('player:itemCollected', {
       item: item,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
     this.removeItem(item.id);
   }

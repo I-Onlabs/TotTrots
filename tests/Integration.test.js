@@ -10,7 +10,14 @@
  * - Performance characteristics
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest,
+} from '@jest/globals';
 import GameRefactored from '../src/GameRefactored.js';
 import { GameManager } from '../src/managers/GameManager.js';
 import { AchievementManager } from '../src/managers/AchievementManager.js';
@@ -22,7 +29,7 @@ const mockEventBus = {
   on: jest.fn(),
   off: jest.fn(),
   emit: jest.fn(),
-  removeAllListeners: jest.fn()
+  removeAllListeners: jest.fn(),
 };
 
 const mockLogger = new Logger(false);
@@ -30,7 +37,7 @@ const mockConfig = {
   debug: false,
   enableAchievements: true,
   enableDailyChallenges: true,
-  enableAccessibility: true
+  enableAccessibility: true,
 };
 
 describe('Integration Tests', () => {
@@ -38,11 +45,11 @@ describe('Integration Tests', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     game = new GameRefactored({
       eventBus: mockEventBus,
       logger: mockLogger,
-      config: mockConfig
+      config: mockConfig,
     });
   });
 
@@ -67,14 +74,18 @@ describe('Integration Tests', () => {
       mockEventBus.emit('player:comboChanged', { combo: 10 });
 
       // Get event handlers
-      const scoreHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:scoreChanged')[1];
-      const levelHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:levelCompleted')[1];
-      const itemHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:itemCollected')[1];
-      const comboHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:comboChanged')[1];
+      const scoreHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:scoreChanged'
+      )[1];
+      const levelHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:levelCompleted'
+      )[1];
+      const itemHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:itemCollected'
+      )[1];
+      const comboHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:comboChanged'
+      )[1];
 
       // Trigger handlers
       scoreHandler({ score: 1000 });
@@ -83,10 +94,18 @@ describe('Integration Tests', () => {
       comboHandler({ combo: 10 });
 
       // Verify integration
-      expect(game.managers.achievements.checkScoreAchievements).toHaveBeenCalledWith(1000);
-      expect(game.managers.achievements.checkLevelAchievements).toHaveBeenCalledWith(5);
-      expect(game.managers.achievements.checkCollectionAchievements).toHaveBeenCalledWith('health_potion');
-      expect(game.managers.achievements.checkComboAchievements).toHaveBeenCalledWith(10);
+      expect(
+        game.managers.achievements.checkScoreAchievements
+      ).toHaveBeenCalledWith(1000);
+      expect(
+        game.managers.achievements.checkLevelAchievements
+      ).toHaveBeenCalledWith(5);
+      expect(
+        game.managers.achievements.checkCollectionAchievements
+      ).toHaveBeenCalledWith('health_potion');
+      expect(
+        game.managers.achievements.checkComboAchievements
+      ).toHaveBeenCalledWith(10);
     });
 
     it('should integrate daily challenges with gameplay events', async () => {
@@ -97,14 +116,18 @@ describe('Integration Tests', () => {
       game.managers.dailyChallenges.checkComboChallenges = jest.fn();
 
       // Get event handlers
-      const scoreHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:scoreChanged')[1];
-      const levelHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:levelCompleted')[1];
-      const itemHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:itemCollected')[1];
-      const comboHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:comboChanged')[1];
+      const scoreHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:scoreChanged'
+      )[1];
+      const levelHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:levelCompleted'
+      )[1];
+      const itemHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:itemCollected'
+      )[1];
+      const comboHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:comboChanged'
+      )[1];
 
       // Trigger handlers
       scoreHandler({ score: 1000 });
@@ -113,10 +136,18 @@ describe('Integration Tests', () => {
       comboHandler({ combo: 10 });
 
       // Verify integration
-      expect(game.managers.dailyChallenges.checkScoreChallenges).toHaveBeenCalledWith(1000);
-      expect(game.managers.dailyChallenges.checkLevelChallenges).toHaveBeenCalledWith(5);
-      expect(game.managers.dailyChallenges.checkCollectionChallenges).toHaveBeenCalledWith('health_potion');
-      expect(game.managers.dailyChallenges.checkComboChallenges).toHaveBeenCalledWith(10);
+      expect(
+        game.managers.dailyChallenges.checkScoreChallenges
+      ).toHaveBeenCalledWith(1000);
+      expect(
+        game.managers.dailyChallenges.checkLevelChallenges
+      ).toHaveBeenCalledWith(5);
+      expect(
+        game.managers.dailyChallenges.checkCollectionChallenges
+      ).toHaveBeenCalledWith('health_potion');
+      expect(
+        game.managers.dailyChallenges.checkComboChallenges
+      ).toHaveBeenCalledWith(10);
     });
 
     it('should apply achievement effects to gameplay', () => {
@@ -126,8 +157,8 @@ describe('Integration Tests', () => {
         effects: {
           scoreMultiplier: 2.0,
           extraLives: 1,
-          temporaryPowerUp: 'speed_boost'
-        }
+          temporaryPowerUp: 'speed_boost',
+        },
       };
 
       // Mock game state
@@ -139,8 +170,14 @@ describe('Integration Tests', () => {
       // Verify effects applied
       expect(game.gameState.scoreMultiplier).toBe(2.0);
       expect(game.gameState.lives).toBe(4);
-      expect(mockEventBus.emit).toHaveBeenCalledWith('player:livesChanged', expect.any(Object));
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:powerUpActivated', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'player:livesChanged',
+        expect.any(Object)
+      );
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:powerUpActivated',
+        expect.any(Object)
+      );
     });
 
     it('should apply challenge effects to gameplay', () => {
@@ -150,8 +187,8 @@ describe('Integration Tests', () => {
         effects: {
           scoreBonus: 500,
           currency: { coins: 100 },
-          temporaryEffect: 'damage_boost'
-        }
+          temporaryEffect: 'damage_boost',
+        },
       };
 
       // Apply effects
@@ -159,9 +196,18 @@ describe('Integration Tests', () => {
 
       // Verify effects applied
       expect(game.gameState.score).toBe(500);
-      expect(mockEventBus.emit).toHaveBeenCalledWith('player:scoreChanged', expect.any(Object));
-      expect(mockEventBus.emit).toHaveBeenCalledWith('player:currencyEarned', expect.any(Object));
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:temporaryEffect', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'player:scoreChanged',
+        expect.any(Object)
+      );
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'player:currencyEarned',
+        expect.any(Object)
+      );
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:temporaryEffect',
+        expect.any(Object)
+      );
     });
   });
 
@@ -172,22 +218,25 @@ describe('Integration Tests', () => {
       game.managers.game.handleDailyChallengeCompletion = jest.fn();
 
       // Get event handlers
-      const achievementHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'achievement:unlocked')[1];
-      const challengeHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'dailyChallenge:completed')[1];
+      const achievementHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'achievement:unlocked'
+      )[1];
+      const challengeHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'dailyChallenge:completed'
+      )[1];
 
       // Trigger handlers
       achievementHandler({ id: 'test_achievement', name: 'Test Achievement' });
       challengeHandler({ id: 'test_challenge', name: 'Test Challenge' });
 
       // Verify propagation
-      expect(game.managers.game.handleAchievementUnlock).toHaveBeenCalledWith(
-        { id: 'test_achievement', name: 'Test Achievement' }
-      );
-      expect(game.managers.game.handleDailyChallengeCompletion).toHaveBeenCalledWith(
-        { id: 'test_challenge', name: 'Test Challenge' }
-      );
+      expect(game.managers.game.handleAchievementUnlock).toHaveBeenCalledWith({
+        id: 'test_achievement',
+        name: 'Test Achievement',
+      });
+      expect(
+        game.managers.game.handleDailyChallengeCompletion
+      ).toHaveBeenCalledWith({ id: 'test_challenge', name: 'Test Challenge' });
     });
 
     it('should handle endless mode events', () => {
@@ -198,12 +247,15 @@ describe('Integration Tests', () => {
       game.managers.achievements.checkComboAchievements = jest.fn();
 
       // Get event handlers
-      const waveHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'endless:waveStarted')[1];
-      const scoreHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'endless:scoreChanged')[1];
-      const comboHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'endless:comboChanged')[1];
+      const waveHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'endless:waveStarted'
+      )[1];
+      const scoreHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'endless:scoreChanged'
+      )[1];
+      const comboHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'endless:comboChanged'
+      )[1];
 
       // Trigger handlers
       waveHandler({ wave: 5, difficulty: 1.5 });
@@ -211,10 +263,18 @@ describe('Integration Tests', () => {
       comboHandler({ combo: 15, maxCombo: 20 });
 
       // Verify integration
-      expect(game.managers.achievements.checkSurvivalAchievements).toHaveBeenCalledWith(5);
-      expect(game.managers.dailyChallenges.checkSurvivalChallenges).toHaveBeenCalledWith(5);
-      expect(game.managers.achievements.checkScoreAchievements).toHaveBeenCalledWith(2000);
-      expect(game.managers.achievements.checkComboAchievements).toHaveBeenCalledWith(15);
+      expect(
+        game.managers.achievements.checkSurvivalAchievements
+      ).toHaveBeenCalledWith(5);
+      expect(
+        game.managers.dailyChallenges.checkSurvivalChallenges
+      ).toHaveBeenCalledWith(5);
+      expect(
+        game.managers.achievements.checkScoreAchievements
+      ).toHaveBeenCalledWith(2000);
+      expect(
+        game.managers.achievements.checkComboAchievements
+      ).toHaveBeenCalledWith(15);
     });
   });
 
@@ -253,7 +313,9 @@ describe('Integration Tests', () => {
 
     it('should handle manager initialization errors gracefully', async () => {
       // Mock one manager to fail
-      game.managers.game.initialize = jest.fn().mockRejectedValue(new Error('Init failed'));
+      game.managers.game.initialize = jest
+        .fn()
+        .mockRejectedValue(new Error('Init failed'));
 
       await expect(game.start()).rejects.toThrow('Init failed');
     });
@@ -266,12 +328,15 @@ describe('Integration Tests', () => {
       game.managers.achievements.checkScoreAchievements = jest.fn();
 
       // Simulate score change
-      const scoreHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:scoreChanged')[1];
+      const scoreHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:scoreChanged'
+      )[1];
       scoreHandler({ score: 1000 });
 
       // Verify coordination
-      expect(game.managers.achievements.checkScoreAchievements).toHaveBeenCalledWith(1000);
+      expect(
+        game.managers.achievements.checkScoreAchievements
+      ).toHaveBeenCalledWith(1000);
     });
 
     it('should coordinate between game manager and daily challenge manager', () => {
@@ -280,25 +345,31 @@ describe('Integration Tests', () => {
       game.managers.dailyChallenges.checkLevelChallenges = jest.fn();
 
       // Simulate level completion
-      const levelHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:levelCompleted')[1];
+      const levelHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:levelCompleted'
+      )[1];
       levelHandler({ level: 5 });
 
       // Verify coordination
-      expect(game.managers.dailyChallenges.checkLevelChallenges).toHaveBeenCalledWith(5);
+      expect(
+        game.managers.dailyChallenges.checkLevelChallenges
+      ).toHaveBeenCalledWith(5);
     });
   });
 
   describe('Error Propagation', () => {
     it('should handle errors in event handlers gracefully', () => {
       // Mock error in achievement handler
-      game.managers.achievements.checkScoreAchievements = jest.fn().mockImplementation(() => {
-        throw new Error('Achievement check failed');
-      });
+      game.managers.achievements.checkScoreAchievements = jest
+        .fn()
+        .mockImplementation(() => {
+          throw new Error('Achievement check failed');
+        });
 
       // Get score handler
-      const scoreHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:scoreChanged')[1];
+      const scoreHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:scoreChanged'
+      )[1];
 
       // Should not throw
       expect(() => {
@@ -328,8 +399,9 @@ describe('Integration Tests', () => {
       game.managers.achievements.checkScoreAchievements = jest.fn();
       game.managers.dailyChallenges.checkScoreChallenges = jest.fn();
 
-      const scoreHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'player:scoreChanged')[1];
+      const scoreHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'player:scoreChanged'
+      )[1];
 
       // Simulate high-frequency score changes
       const startTime = performance.now();
@@ -340,7 +412,9 @@ describe('Integration Tests', () => {
 
       // Should complete within reasonable time
       expect(endTime - startTime).toBeLessThan(100); // 100ms
-      expect(game.managers.achievements.checkScoreAchievements).toHaveBeenCalledTimes(1000);
+      expect(
+        game.managers.achievements.checkScoreAchievements
+      ).toHaveBeenCalledTimes(1000);
     });
 
     it('should maintain performance with many game objects', () => {
@@ -361,26 +435,30 @@ describe('Integration Tests', () => {
   describe('Configuration Management', () => {
     it('should update configuration across all managers', () => {
       const newConfig = { debug: true, enableAchievements: false };
-      
+
       game.updateConfig(newConfig);
 
       expect(game.config.debug).toBe(true);
       expect(game.config.enableAchievements).toBe(false);
-      expect(mockEventBus.emit).toHaveBeenCalledWith('game:configChanged', expect.any(Object));
+      expect(mockEventBus.emit).toHaveBeenCalledWith(
+        'game:configChanged',
+        expect.any(Object)
+      );
     });
 
     it('should handle configuration changes gracefully', () => {
       // Mock config change handler
       game.managers.game.handleConfigChange = jest.fn();
 
-      const configHandler = mockEventBus.on.mock.calls
-        .find(call => call[0] === 'game:configChanged')[1];
-      
+      const configHandler = mockEventBus.on.mock.calls.find(
+        (call) => call[0] === 'game:configChanged'
+      )[1];
+
       configHandler({ config: { debug: true } });
 
-      expect(game.managers.game.handleConfigChange).toHaveBeenCalledWith(
-        { config: { debug: true } }
-      );
+      expect(game.managers.game.handleConfigChange).toHaveBeenCalledWith({
+        config: { debug: true },
+      });
     });
   });
 
@@ -388,7 +466,7 @@ describe('Integration Tests', () => {
     it('should clean up resources properly on destroy', () => {
       // Add some game objects
       game.addGameObject({ id: 'test_obj' });
-      
+
       // Destroy game
       game.destroy();
 
@@ -400,13 +478,13 @@ describe('Integration Tests', () => {
 
     it('should not leak event listeners', () => {
       const initialListenerCount = mockEventBus.on.mock.calls.length;
-      
+
       // Create and destroy multiple game instances
       for (let i = 0; i < 5; i++) {
         const tempGame = new GameRefactored({
           eventBus: mockEventBus,
           logger: mockLogger,
-          config: mockConfig
+          config: mockConfig,
         });
         tempGame.destroy();
       }

@@ -55,7 +55,7 @@ export class EndlessModeScene {
       powerUps: new Map(),
       background: null,
       camera: null,
-      ui: null
+      ui: null,
     };
 
     // Endless mode configuration
@@ -70,16 +70,21 @@ export class EndlessModeScene {
       powerUpSpawnRate: 0.05, // 5% chance per enemy kill
       comboDecayTime: 5000, // 5 seconds
       scoreMultiplier: 100,
-      survivalBonus: 10 // points per second
+      survivalBonus: 10, // points per second
     };
 
     // Wave patterns
     this.wavePatterns = [
       { name: 'Basic', enemies: ['basic_enemy'], count: 5, interval: 2000 },
       { name: 'Rush', enemies: ['basic_enemy'], count: 10, interval: 1000 },
-      { name: 'Mixed', enemies: ['basic_enemy', 'fast_enemy'], count: 8, interval: 1500 },
+      {
+        name: 'Mixed',
+        enemies: ['basic_enemy', 'fast_enemy'],
+        count: 8,
+        interval: 1500,
+      },
       { name: 'Heavy', enemies: ['heavy_enemy'], count: 3, interval: 3000 },
-      { name: 'Boss', enemies: ['boss_enemy'], count: 1, interval: 0 }
+      { name: 'Boss', enemies: ['boss_enemy'], count: 1, interval: 0 },
     ];
 
     // Enemy types
@@ -89,29 +94,29 @@ export class EndlessModeScene {
         damage: 10,
         speed: 1.0,
         score: 100,
-        size: 32
+        size: 32,
       },
       fast_enemy: {
         health: 30,
         damage: 15,
         speed: 2.0,
         score: 150,
-        size: 24
+        size: 24,
       },
       heavy_enemy: {
         health: 200,
         damage: 25,
         speed: 0.5,
         score: 500,
-        size: 64
+        size: 64,
       },
       boss_enemy: {
         health: 1000,
         damage: 50,
         speed: 0.3,
         score: 2000,
-        size: 128
-      }
+        size: 128,
+      },
     };
 
     // Set up event handlers
@@ -281,7 +286,10 @@ export class EndlessModeScene {
 
     // Power-up events
     this.eventBus.on('powerUp:spawned', this.handlePowerUpSpawned.bind(this));
-    this.eventBus.on('powerUp:collected', this.handlePowerUpCollected.bind(this));
+    this.eventBus.on(
+      'powerUp:collected',
+      this.handlePowerUpCollected.bind(this)
+    );
 
     // Input events
     this.eventBus.on('input:keydown', this.handleKeyDown.bind(this));
@@ -292,22 +300,70 @@ export class EndlessModeScene {
    * Remove event handlers
    */
   removeEventHandlers() {
-    this.eventBus.removeListener('scene:activate', this.handleSceneActivate.bind(this));
-    this.eventBus.removeListener('scene:deactivate', this.handleSceneDeactivate.bind(this));
-    this.eventBus.removeListener('scene:pause', this.handleScenePause.bind(this));
-    this.eventBus.removeListener('scene:resume', this.handleSceneResume.bind(this));
-    this.eventBus.removeListener('game:started', this.handleGameStarted.bind(this));
-    this.eventBus.removeListener('game:stopped', this.handleGameStopped.bind(this));
-    this.eventBus.removeListener('player:spawned', this.handlePlayerSpawned.bind(this));
-    this.eventBus.removeListener('player:destroyed', this.handlePlayerDestroyed.bind(this));
-    this.eventBus.removeListener('player:damaged', this.handlePlayerDamaged.bind(this));
-    this.eventBus.removeListener('enemy:spawned', this.handleEnemySpawned.bind(this));
-    this.eventBus.removeListener('enemy:destroyed', this.handleEnemyDestroyed.bind(this));
-    this.eventBus.removeListener('item:spawned', this.handleItemSpawned.bind(this));
-    this.eventBus.removeListener('item:collected', this.handleItemCollected.bind(this));
-    this.eventBus.removeListener('powerUp:spawned', this.handlePowerUpSpawned.bind(this));
-    this.eventBus.removeListener('powerUp:collected', this.handlePowerUpCollected.bind(this));
-    this.eventBus.removeListener('input:keydown', this.handleKeyDown.bind(this));
+    this.eventBus.removeListener(
+      'scene:activate',
+      this.handleSceneActivate.bind(this)
+    );
+    this.eventBus.removeListener(
+      'scene:deactivate',
+      this.handleSceneDeactivate.bind(this)
+    );
+    this.eventBus.removeListener(
+      'scene:pause',
+      this.handleScenePause.bind(this)
+    );
+    this.eventBus.removeListener(
+      'scene:resume',
+      this.handleSceneResume.bind(this)
+    );
+    this.eventBus.removeListener(
+      'game:started',
+      this.handleGameStarted.bind(this)
+    );
+    this.eventBus.removeListener(
+      'game:stopped',
+      this.handleGameStopped.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:spawned',
+      this.handlePlayerSpawned.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:destroyed',
+      this.handlePlayerDestroyed.bind(this)
+    );
+    this.eventBus.removeListener(
+      'player:damaged',
+      this.handlePlayerDamaged.bind(this)
+    );
+    this.eventBus.removeListener(
+      'enemy:spawned',
+      this.handleEnemySpawned.bind(this)
+    );
+    this.eventBus.removeListener(
+      'enemy:destroyed',
+      this.handleEnemyDestroyed.bind(this)
+    );
+    this.eventBus.removeListener(
+      'item:spawned',
+      this.handleItemSpawned.bind(this)
+    );
+    this.eventBus.removeListener(
+      'item:collected',
+      this.handleItemCollected.bind(this)
+    );
+    this.eventBus.removeListener(
+      'powerUp:spawned',
+      this.handlePowerUpSpawned.bind(this)
+    );
+    this.eventBus.removeListener(
+      'powerUp:collected',
+      this.handlePowerUpCollected.bind(this)
+    );
+    this.eventBus.removeListener(
+      'input:keydown',
+      this.handleKeyDown.bind(this)
+    );
     this.eventBus.removeListener('input:keyup', this.handleKeyUp.bind(this));
   }
 
@@ -320,28 +376,28 @@ export class EndlessModeScene {
       physics: new PhysicsSystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
+        config: this.config,
       }),
       collision: new CollisionSystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
+        config: this.config,
       }),
       audio: new AudioSystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
+        config: this.config,
       }),
       particles: new ParticleSystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
+        config: this.config,
       }),
       ai: new AISystem({
         eventBus: this.eventBus,
         logger: this.logger,
-        config: this.config
-      })
+        config: this.config,
+      }),
     };
 
     // Initialize all systems
@@ -360,7 +416,7 @@ export class EndlessModeScene {
     this.state.background = new EndlessBackground({
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
     await this.state.background.initialize();
 
@@ -368,7 +424,7 @@ export class EndlessModeScene {
     this.state.player = new Player({
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
     await this.state.player.initialize();
   }
@@ -380,7 +436,7 @@ export class EndlessModeScene {
     this.state.ui = new EndlessUI({
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
     await this.state.ui.initialize();
   }
@@ -392,7 +448,7 @@ export class EndlessModeScene {
     this.state.camera = new Camera({
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
     await this.state.camera.initialize();
   }
@@ -401,7 +457,8 @@ export class EndlessModeScene {
    * Update survival score
    */
   updateSurvivalScore(deltaTime) {
-    const survivalPoints = Math.floor(deltaTime / 1000) * this.endlessConfig.survivalBonus;
+    const survivalPoints =
+      Math.floor(deltaTime / 1000) * this.endlessConfig.survivalBonus;
     this.addScore(survivalPoints);
   }
 
@@ -410,7 +467,10 @@ export class EndlessModeScene {
    */
   updateComboDecay(deltaTime) {
     if (this.state.combo > 0) {
-      this.state.combo = Math.max(0, this.state.combo - deltaTime / this.endlessConfig.comboDecayTime);
+      this.state.combo = Math.max(
+        0,
+        this.state.combo - deltaTime / this.endlessConfig.comboDecayTime
+      );
     }
   }
 
@@ -419,7 +479,7 @@ export class EndlessModeScene {
    */
   updateWaveManagement(deltaTime) {
     const now = Date.now();
-    
+
     if (now - this.state.lastWaveTime >= this.state.waveInterval) {
       this.startNextWave();
     }
@@ -429,10 +489,16 @@ export class EndlessModeScene {
    * Update enemy spawning
    */
   updateEnemySpawning(deltaTime) {
-    if (this.state.currentWavePattern && this.state.enemiesSpawned < this.state.currentWavePattern.count) {
+    if (
+      this.state.currentWavePattern &&
+      this.state.enemiesSpawned < this.state.currentWavePattern.count
+    ) {
       const now = Date.now();
-      
-      if (now - this.state.lastEnemySpawn >= this.state.currentWavePattern.interval) {
+
+      if (
+        now - this.state.lastEnemySpawn >=
+        this.state.currentWavePattern.interval
+      ) {
         this.spawnEnemy();
       }
     }
@@ -444,10 +510,10 @@ export class EndlessModeScene {
   startNextWave() {
     this.state.currentWave++;
     this.state.lastWaveTime = Date.now();
-    
+
     // Increase difficulty
     this.state.difficulty += this.endlessConfig.difficultyIncrease;
-    
+
     // Decrease wave interval
     this.state.waveInterval = Math.max(
       this.endlessConfig.minWaveInterval,
@@ -455,7 +521,10 @@ export class EndlessModeScene {
     );
 
     // Select wave pattern
-    const patternIndex = Math.min(this.state.currentWave - 1, this.wavePatterns.length - 1);
+    const patternIndex = Math.min(
+      this.state.currentWave - 1,
+      this.wavePatterns.length - 1
+    );
     this.state.currentWavePattern = this.wavePatterns[patternIndex];
     this.state.enemiesSpawned = 0;
     this.state.lastEnemySpawn = Date.now();
@@ -464,7 +533,7 @@ export class EndlessModeScene {
       wave: this.state.currentWave,
       difficulty: this.state.difficulty,
       pattern: this.state.currentWavePattern,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     this.logger.info(`Wave ${this.state.currentWave} started`);
@@ -476,10 +545,11 @@ export class EndlessModeScene {
   spawnEnemy() {
     if (!this.state.currentWavePattern) return;
 
-    const enemyType = this.state.currentWavePattern.enemies[
-      Math.floor(Math.random() * this.state.currentWavePattern.enemies.length)
-    ];
-    
+    const enemyType =
+      this.state.currentWavePattern.enemies[
+        Math.floor(Math.random() * this.state.currentWavePattern.enemies.length)
+      ];
+
     const enemyData = this.enemyTypes[enemyType];
     if (!enemyData) return;
 
@@ -489,7 +559,7 @@ export class EndlessModeScene {
       health: Math.floor(enemyData.health * this.state.difficulty),
       damage: Math.floor(enemyData.damage * this.state.difficulty),
       speed: enemyData.speed * this.state.difficulty,
-      score: Math.floor(enemyData.score * this.state.difficulty)
+      score: Math.floor(enemyData.score * this.state.difficulty),
     };
 
     const enemy = new Enemy({
@@ -497,7 +567,7 @@ export class EndlessModeScene {
       data: scaledEnemy,
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
 
     this.addEnemy(enemy);
@@ -511,9 +581,9 @@ export class EndlessModeScene {
   addScore(amount) {
     const multiplier = this.state.multiplier * (1 + this.state.combo * 0.1);
     const finalScore = Math.floor(amount * multiplier);
-    
+
     this.state.score += finalScore;
-    
+
     if (this.state.score > this.state.highScore) {
       this.state.highScore = this.state.score;
     }
@@ -522,7 +592,7 @@ export class EndlessModeScene {
       score: this.state.score,
       highScore: this.state.highScore,
       change: finalScore,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -536,7 +606,7 @@ export class EndlessModeScene {
     this.eventBus.emit('endless:comboChanged', {
       combo: this.state.combo,
       maxCombo: this.state.maxCombo,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -738,11 +808,11 @@ export class EndlessModeScene {
     const id = enemy.id || this.generateId();
     enemy.id = id;
     this.state.enemies.set(id, enemy);
-    
+
     this.eventBus.emit('enemy:spawned', {
       id: id,
       enemy: enemy,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -753,11 +823,11 @@ export class EndlessModeScene {
     const enemy = this.state.enemies.get(id);
     if (enemy) {
       this.state.enemies.delete(id);
-      
+
       this.eventBus.emit('enemy:destroyed', {
         id: id,
         enemy: enemy,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
   }
@@ -769,11 +839,11 @@ export class EndlessModeScene {
     const id = item.id || this.generateId();
     item.id = id;
     this.state.items.set(id, item);
-    
+
     this.eventBus.emit('item:spawned', {
       id: id,
       item: item,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -784,11 +854,11 @@ export class EndlessModeScene {
     const item = this.state.items.get(id);
     if (item) {
       this.state.items.delete(id);
-      
+
       this.eventBus.emit('item:destroyed', {
         id: id,
         item: item,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
   }
@@ -800,11 +870,11 @@ export class EndlessModeScene {
     const id = powerUp.id || this.generateId();
     powerUp.id = id;
     this.state.powerUps.set(id, powerUp);
-    
+
     this.eventBus.emit('powerUp:spawned', {
       id: id,
       powerUp: powerUp,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -815,11 +885,11 @@ export class EndlessModeScene {
     const powerUp = this.state.powerUps.get(id);
     if (powerUp) {
       this.state.powerUps.delete(id);
-      
+
       this.eventBus.emit('powerUp:destroyed', {
         id: id,
         powerUp: powerUp,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
   }
@@ -940,7 +1010,7 @@ export class EndlessModeScene {
     this.removeEnemy(data.id);
     this.state.enemiesKilled++;
     this.addCombo();
-    
+
     // Chance to spawn item or power-up
     if (Math.random() < this.endlessConfig.itemSpawnRate) {
       this.spawnRandomItem();
@@ -982,14 +1052,14 @@ export class EndlessModeScene {
       damage: enemy.damage || 1,
       source: 'enemy',
       enemy: enemy,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
   handlePlayerItemCollision(player, item) {
     this.eventBus.emit('player:itemCollected', {
       item: item,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
     this.removeItem(item.id);
   }
@@ -997,7 +1067,7 @@ export class EndlessModeScene {
   handlePlayerPowerUpCollision(player, powerUp) {
     this.eventBus.emit('player:powerUpCollected', {
       powerUp: powerUp,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
     this.removePowerUp(powerUp.id);
   }
@@ -1008,14 +1078,14 @@ export class EndlessModeScene {
   spawnRandomItem() {
     const items = ['health_potion', 'mana_potion', 'score_multiplier'];
     const itemType = items[Math.floor(Math.random() * items.length)];
-    
+
     const item = new Item({
       type: itemType,
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
-    
+
     this.addItem(item);
   }
 
@@ -1025,14 +1095,14 @@ export class EndlessModeScene {
   spawnRandomPowerUp() {
     const powerUps = ['speed_boost', 'damage_boost', 'shield', 'multiplier'];
     const powerUpType = powerUps[Math.floor(Math.random() * powerUps.length)];
-    
+
     const powerUp = new PowerUp({
       type: powerUpType,
       eventBus: this.eventBus,
       logger: this.logger,
-      config: this.config
+      config: this.config,
     });
-    
+
     this.addPowerUp(powerUp);
   }
 

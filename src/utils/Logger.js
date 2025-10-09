@@ -76,31 +76,37 @@ export class Logger {
     if (level === 'debug') {
       // Filter repetitive save/load messages
       if (context === 'SaveSystem' || context === 'SaveManager') {
-        if (message.includes('Auto-save') || 
-            message.includes('Save data') || 
-            message.includes('Load data') ||
-            message.includes('Save slot') ||
-            message.includes('Load slot')) {
+        if (
+          message.includes('Auto-save') ||
+          message.includes('Save data') ||
+          message.includes('Load data') ||
+          message.includes('Save slot') ||
+          message.includes('Load slot')
+        ) {
           return true;
         }
       }
 
       // Filter repetitive shop messages
       if (context === 'ShopSystem') {
-        if (message.includes('Shop data') || 
-            message.includes('Currency') ||
-            message.includes('Inventory') ||
-            message.includes('Daily deals')) {
+        if (
+          message.includes('Shop data') ||
+          message.includes('Currency') ||
+          message.includes('Inventory') ||
+          message.includes('Daily deals')
+        ) {
           return true;
         }
       }
 
       // Filter repetitive game object messages
       if (context === 'GameScene' || context === 'EndlessModeScene') {
-        if (message.includes('Game object') || 
-            message.includes('Enemy spawned') ||
-            message.includes('Item spawned') ||
-            message.includes('Effect spawned')) {
+        if (
+          message.includes('Game object') ||
+          message.includes('Enemy spawned') ||
+          message.includes('Item spawned') ||
+          message.includes('Effect spawned')
+        ) {
           return true;
         }
       }

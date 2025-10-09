@@ -620,14 +620,18 @@ export class GameRefactored {
    * Get performance report
    */
   getPerformanceReport() {
-    return this.performanceMonitor ? this.performanceMonitor.getPerformanceReport() : null;
+    return this.performanceMonitor
+      ? this.performanceMonitor.getPerformanceReport()
+      : null;
   }
 
   /**
    * Get mobile controls state
    */
   getMobileControlsState() {
-    return this.inputManager ? this.inputManager.getMobileControlsState() : null;
+    return this.inputManager
+      ? this.inputManager.getMobileControlsState()
+      : null;
   }
 
   /**
@@ -671,7 +675,7 @@ export class GameRefactored {
         lives: this.gameState.lives,
         change: effects.extraLives,
         source: 'achievement',
-        achievementId: achievement.id
+        achievementId: achievement.id,
       });
     }
 
@@ -681,7 +685,7 @@ export class GameRefactored {
         type: effects.temporaryPowerUp,
         duration: effects.duration || 30000,
         source: 'achievement',
-        achievementId: achievement.id
+        achievementId: achievement.id,
       });
     }
 
@@ -690,7 +694,7 @@ export class GameRefactored {
       this.eventBus.emit('player:statBoost', {
         stats: effects.statBoost,
         source: 'achievement',
-        achievementId: achievement.id
+        achievementId: achievement.id,
       });
     }
 
@@ -699,7 +703,7 @@ export class GameRefactored {
       this.eventBus.emit('player:abilityUnlocked', {
         ability: effects.ability,
         source: 'achievement',
-        achievementId: achievement.id
+        achievementId: achievement.id,
       });
     }
   }
@@ -718,7 +722,7 @@ export class GameRefactored {
       this.eventBus.emit('player:scoreChanged', {
         scoreChange: effects.scoreBonus,
         source: 'dailyChallenge',
-        challengeId: challenge.id
+        challengeId: challenge.id,
       });
     }
 
@@ -727,7 +731,7 @@ export class GameRefactored {
       this.eventBus.emit('player:currencyEarned', {
         amount: effects.currency,
         source: 'dailyChallenge',
-        challengeId: challenge.id
+        challengeId: challenge.id,
       });
     }
 
@@ -737,7 +741,7 @@ export class GameRefactored {
         effect: effects.temporaryEffect,
         duration: effects.duration || 30000,
         source: 'dailyChallenge',
-        challengeId: challenge.id
+        challengeId: challenge.id,
       });
     }
 
@@ -747,7 +751,7 @@ export class GameRefactored {
         type: effects.unlock.type,
         item: effects.unlock.item,
         source: 'dailyChallenge',
-        challengeId: challenge.id
+        challengeId: challenge.id,
       });
     }
   }
