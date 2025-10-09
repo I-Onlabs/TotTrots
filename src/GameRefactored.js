@@ -15,6 +15,9 @@ import { DailyChallengeManager } from './managers/DailyChallengeManager.js';
 import { AccessibilityManager } from './managers/AccessibilityManager.js';
 import { EventBus } from './core/EventBus.js';
 import { Logger } from './utils/Logger.js';
+import { PerformanceMonitor } from './core/PerformanceMonitor.js';
+import { InputManager } from './core/InputManager.js';
+import { MobileTesting } from './utils/MobileTesting.js';
 
 export class GameRefactored {
   constructor(config = {}) {
@@ -95,6 +98,29 @@ export class GameRefactored {
     // Manager instances (dependency injection) - with assertions
     this.managers = {};
     this.initializeManagers();
+
+    // Performance monitoring
+    this.performanceMonitor = new PerformanceMonitor({
+      eventBus: this.eventBus,
+      logger: this.logger,
+      config: this.config,
+    });
+
+    // Input management
+    this.inputManager = new InputManager({
+      eventBus: this.eventBus,
+      logger: this.logger,
+      config: this.config,
+    });
+
+    // Mobile testing
+    this.mobileTesting = new MobileTesting({
+      eventBus: this.eventBus,
+      logger: this.logger,
+      inputManager: this.inputManager,
+      performanceMonitor: this.performanceMonitor,
+      config: this.config,
+    });
 
     // Assert managers were initialized
     if (!this.managers.game) {
@@ -263,6 +289,21 @@ export class GameRefactored {
         }
       }
 
+      // Initialize performance monitoring
+      if (this.performanceMonitor.initialize) {
+        await this.performanceMonitor.initialize();
+      }
+
+      // Initialize input management
+      if (this.inputManager.initialize) {
+        await this.inputManager.initialize();
+      }
+
+      // Initialize mobile testing
+      if (this.mobileTesting.initialize) {
+        await this.mobileTesting.initialize();
+      }
+
       // Set up game state
       this.gameState.isRunning = true;
       this.gameState.startTime = Date.now();
@@ -336,6 +377,21 @@ export class GameRefactored {
       }
     }
 
+    // Cleanup performance monitoring
+    if (this.performanceMonitor.cleanup) {
+      this.performanceMonitor.cleanup();
+    }
+
+    // Cleanup input management
+    if (this.inputManager.cleanup) {
+      this.inputManager.cleanup();
+    }
+
+    // Cleanup mobile testing
+    if (this.mobileTesting.cleanup) {
+      this.mobileTesting.cleanup();
+    }
+
     this.eventBus.emit('game:stopped', {
       timestamp: Date.now(),
       finalScore: this.gameState.score,
@@ -362,6 +418,16 @@ export class GameRefactored {
         if (manager.update) {
           manager.update(deltaTime, this.gameState);
         }
+      }
+
+      // Update performance monitoring
+      if (this.performanceMonitor.update) {
+        this.performanceMonitor.update(deltaTime);
+      }
+
+      // Update input management
+      if (this.inputManager.update) {
+        this.inputManager.update(deltaTime);
       }
 
       // Update game objects
@@ -471,6 +537,48 @@ export class GameRefactored {
    */
   getManager(name) {
     return this.managers[name];
+  }
+
+  /**
+   * Get performance monitor
+   */
+  getPerformanceMonitor() {
+    return this.performanceMonitor;
+  }
+
+  /**
+   * Get input manager
+   */
+  getInputManager() {
+    return this.inputManager;
+  }
+
+  /**
+   * Get mobile testing utility
+   */
+  getMobileTesting() {
+    return this.mobileTesting;
+  }
+
+  /**
+   * Get performance report
+   */
+  getPerformanceReport() {
+    return this.performanceMonitor ? this.performanceMonitor.getPerformanceReport() : null;
+  }
+
+  /**
+   * Get mobile controls state
+   */
+  getMobileControlsState() {
+    return this.inputManager ? this.inputManager.getMobileControlsState() : null;
+  }
+
+  /**
+   * Get mobile test results
+   */
+  getMobileTestResults() {
+    return this.mobileTesting ? this.mobileTesting.getTestResults() : null;
   }
 
   /**

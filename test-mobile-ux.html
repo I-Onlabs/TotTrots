@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile UX Test</title>
+    <link rel="stylesheet" href="./src/styles/mobile-controls.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .test-result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .test-result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .test-result.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .mobile-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            pointer-events: none;
+            z-index: 1000;
+            display: block;
+        }
+        .mobile-controls.visible {
+            display: block;
+        }
+        .virtual-joystick {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            width: 120px;
+            height: 120px;
+            pointer-events: auto;
+        }
+        .joystick-base {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        .joystick-knob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            transform: translate(-50%, -50%);
+        }
+        .action-buttons {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: auto;
+        }
+        .action-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .menu-button, .pause-button {
+            position: absolute;
+            top: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            color: #000;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+        .menu-button {
+            right: 20px;
+        }
+        .pause-button {
+            left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Mobile UX and Performance Testing</h1>
+        
+        <div class="test-section">
+            <h3>System Initialization</h3>
+            <div id="init-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Mobile Controls</h3>
+            <div id="mobile-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Performance Monitoring</h3>
+            <div id="performance-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Mobile Testing</h3>
+            <div id="testing-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Touch Events</h3>
+            <div id="touch-results"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GameRefactored } from './src/GameRefactored.js';
+        
+        function addResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            container.appendChild(div);
+        }
+        
+        async function runTests() {
+            try {
+                addResult('init-results', 'Initializing game systems...', 'info');
+                
+                // Initialize game
+                const game = new GameRefactored({
+                    debug: true,
+                    enableAchievements: true,
+                    enableDailyChallenges: true,
+                    enableAccessibility: true,
+                });
+                
+                addResult('init-results', '✓ Game initialized successfully', 'success');
+                
+                // Test system access
+                const performanceMonitor = game.getPerformanceMonitor();
+                const inputManager = game.getInputManager();
+                const mobileTesting = game.getMobileTesting();
+                
+                addResult('init-results', '✓ PerformanceMonitor available', 'success');
+                addResult('init-results', '✓ InputManager available', 'success');
+                addResult('init-results', '✓ MobileTesting available', 'success');
+                
+                // Test mobile controls
+                const mobileState = game.getMobileControlsState();
+                addResult('mobile-results', `Mobile device detected: ${mobileState.isMobile}`, 'info');
+                addResult('mobile-results', `Orientation: ${mobileState.orientation}`, 'info');
+                addResult('mobile-results', `Virtual joystick: ${mobileState.virtualJoystick ? 'Available' : 'Not available'}`, 'info');
+                
+                // Test performance monitoring
+                const performanceReport = game.getPerformanceReport();
+                if (performanceReport) {
+                    addResult('performance-results', '✓ Performance monitoring active', 'success');
+                    addResult('performance-results', `FPS: ${performanceReport.metrics.fps.current.toFixed(1)}`, 'info');
+                    addResult('performance-results', `Memory: ${(performanceReport.metrics.memory.used / 1024 / 1024).toFixed(1)}MB`, 'info');
+                } else {
+                    addResult('performance-results', 'Performance monitoring not available', 'error');
+                }
+                
+                // Test mobile testing
+                const testResults = game.getMobileTestResults();
+                if (testResults) {
+                    addResult('testing-results', '✓ Mobile testing initialized', 'success');
+                    addResult('testing-results', `Device capabilities: ${testResults.device ? 'Detected' : 'Not detected'}`, 'info');
+                } else {
+                    addResult('testing-results', 'Mobile testing not available', 'error');
+                }
+                
+                // Test touch events
+                addResult('touch-results', 'Touch event testing ready', 'info');
+                addResult('touch-results', 'Try touching the virtual joystick or action buttons below', 'info');
+                
+                // Set up touch event listeners
+                document.addEventListener('touchstart', (e) => {
+                    addResult('touch-results', `Touch start: ${e.touches.length} touches`, 'info');
+                });
+                
+                document.addEventListener('touchend', (e) => {
+                    addResult('touch-results', `Touch end: ${e.changedTouches.length} touches`, 'info');
+                });
+                
+                // Start the game
+                await game.start();
+                addResult('init-results', '✓ Game started successfully', 'success');
+                
+            } catch (error) {
+                addResult('init-results', `Error: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+        
+        // Run tests when page loads
+        runTests();
+    </script>
+</body>
+</html>
