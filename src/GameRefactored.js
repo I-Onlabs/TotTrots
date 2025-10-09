@@ -231,6 +231,9 @@ export class GameRefactored {
       if (this.managers.achievements) {
         this.managers.achievements.checkScoreAchievements(data.score);
       }
+      if (this.managers.dailyChallenges) {
+        this.managers.dailyChallenges.checkScoreChallenges(data.score);
+      }
     });
 
     this.eventBus.on('player:levelCompleted', (data) => {
@@ -238,7 +241,7 @@ export class GameRefactored {
         this.managers.achievements.checkLevelAchievements(data.level);
       }
       if (this.managers.dailyChallenges) {
-        this.managers.dailyChallenges.checkLevelChallenge(data.level);
+        this.managers.dailyChallenges.checkLevelChallenges(data.level);
       }
     });
 
@@ -247,7 +250,34 @@ export class GameRefactored {
         this.managers.achievements.checkCollectionAchievements(data.itemType);
       }
       if (this.managers.dailyChallenges) {
-        this.managers.dailyChallenges.checkCollectionChallenge(data.itemType);
+        this.managers.dailyChallenges.checkCollectionChallenges(data.itemType);
+      }
+    });
+
+    // Combo events for achievements and challenges
+    this.eventBus.on('player:comboChanged', (data) => {
+      if (this.managers.achievements) {
+        this.managers.achievements.checkComboAchievements(data.combo);
+      }
+      if (this.managers.dailyChallenges) {
+        this.managers.dailyChallenges.checkComboChallenges(data.combo);
+      }
+    });
+
+    // Time-based events
+    this.eventBus.on('level:completed', (data) => {
+      if (this.managers.achievements) {
+        this.managers.achievements.checkSpeedAchievements(data.time);
+      }
+      if (this.managers.dailyChallenges) {
+        this.managers.dailyChallenges.checkTimeChallenges(data.time);
+      }
+    });
+
+    // Damage events for perfect level achievements
+    this.eventBus.on('player:damaged', (data) => {
+      if (this.managers.achievements) {
+        this.managers.achievements.handlePlayerDamaged(data);
       }
     });
 
@@ -264,6 +294,8 @@ export class GameRefactored {
       if (this.managers.game) {
         this.managers.game.handleAchievementUnlock(data);
       }
+      // Apply achievement effects to gameplay
+      this.applyAchievementEffects(data);
     });
 
     // Daily challenge events
@@ -271,6 +303,30 @@ export class GameRefactored {
       this.logger.info(`Daily challenge completed: ${data.name}`);
       if (this.managers.game) {
         this.managers.game.handleDailyChallengeCompletion(data);
+      }
+      // Apply challenge effects to gameplay
+      this.applyChallengeEffects(data);
+    });
+
+    // Endless mode events
+    this.eventBus.on('endless:waveStarted', (data) => {
+      if (this.managers.achievements) {
+        this.managers.achievements.checkSurvivalAchievements(data.wave);
+      }
+      if (this.managers.dailyChallenges) {
+        this.managers.dailyChallenges.checkSurvivalChallenges(data.wave);
+      }
+    });
+
+    this.eventBus.on('endless:scoreChanged', (data) => {
+      if (this.managers.achievements) {
+        this.managers.achievements.checkScoreAchievements(data.score);
+      }
+    });
+
+    this.eventBus.on('endless:comboChanged', (data) => {
+      if (this.managers.achievements) {
+        this.managers.achievements.checkComboAchievements(data.combo);
       }
     });
   }
@@ -592,6 +648,108 @@ export class GameRefactored {
       config: this.config,
       timestamp: Date.now(),
     });
+  }
+
+  /**
+   * Apply achievement effects to gameplay
+   */
+  applyAchievementEffects(achievement) {
+    if (!achievement.effects) return;
+
+    const effects = achievement.effects;
+
+    // Apply score multiplier
+    if (effects.scoreMultiplier) {
+      this.gameState.scoreMultiplier = effects.scoreMultiplier;
+      this.logger.info(`Score multiplier applied: ${effects.scoreMultiplier}x`);
+    }
+
+    // Apply extra lives
+    if (effects.extraLives) {
+      this.gameState.lives += effects.extraLives;
+      this.eventBus.emit('player:livesChanged', {
+        lives: this.gameState.lives,
+        change: effects.extraLives,
+        source: 'achievement',
+        achievementId: achievement.id
+      });
+    }
+
+    // Apply temporary power-ups
+    if (effects.temporaryPowerUp) {
+      this.eventBus.emit('game:powerUpActivated', {
+        type: effects.temporaryPowerUp,
+        duration: effects.duration || 30000,
+        source: 'achievement',
+        achievementId: achievement.id
+      });
+    }
+
+    // Apply permanent stat boosts
+    if (effects.statBoost) {
+      this.eventBus.emit('player:statBoost', {
+        stats: effects.statBoost,
+        source: 'achievement',
+        achievementId: achievement.id
+      });
+    }
+
+    // Apply special abilities
+    if (effects.ability) {
+      this.eventBus.emit('player:abilityUnlocked', {
+        ability: effects.ability,
+        source: 'achievement',
+        achievementId: achievement.id
+      });
+    }
+  }
+
+  /**
+   * Apply challenge effects to gameplay
+   */
+  applyChallengeEffects(challenge) {
+    if (!challenge.effects) return;
+
+    const effects = challenge.effects;
+
+    // Apply score bonus
+    if (effects.scoreBonus) {
+      this.gameState.score += effects.scoreBonus;
+      this.eventBus.emit('player:scoreChanged', {
+        scoreChange: effects.scoreBonus,
+        source: 'dailyChallenge',
+        challengeId: challenge.id
+      });
+    }
+
+    // Apply currency rewards
+    if (effects.currency) {
+      this.eventBus.emit('player:currencyEarned', {
+        amount: effects.currency,
+        source: 'dailyChallenge',
+        challengeId: challenge.id
+      });
+    }
+
+    // Apply temporary effects
+    if (effects.temporaryEffect) {
+      this.eventBus.emit('game:temporaryEffect', {
+        effect: effects.temporaryEffect,
+        duration: effects.duration || 30000,
+        source: 'dailyChallenge',
+        challengeId: challenge.id
+      });
+    }
+
+    // Apply unlock rewards
+    if (effects.unlock) {
+      this.eventBus.emit('game:unlock', {
+        type: effects.unlock.type,
+        item: effects.unlock.item,
+        source: 'dailyChallenge',
+        challengeId: challenge.id
+      });
+    }
   }
 
   /**

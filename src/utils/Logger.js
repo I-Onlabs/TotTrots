@@ -69,10 +69,56 @@ export class Logger {
   }
 
   /**
+   * Check if message should be filtered (anti-spam)
+   */
+  shouldFilterMessage(level, message, context) {
+    // Filter debug spam from persistence and shop subsystems
+    if (level === 'debug') {
+      // Filter repetitive save/load messages
+      if (context === 'SaveSystem' || context === 'SaveManager') {
+        if (message.includes('Auto-save') || 
+            message.includes('Save data') || 
+            message.includes('Load data') ||
+            message.includes('Save slot') ||
+            message.includes('Load slot')) {
+          return true;
+        }
+      }
+
+      // Filter repetitive shop messages
+      if (context === 'ShopSystem') {
+        if (message.includes('Shop data') || 
+            message.includes('Currency') ||
+            message.includes('Inventory') ||
+            message.includes('Daily deals')) {
+          return true;
+        }
+      }
+
+      // Filter repetitive game object messages
+      if (context === 'GameScene' || context === 'EndlessModeScene') {
+        if (message.includes('Game object') || 
+            message.includes('Enemy spawned') ||
+            message.includes('Item spawned') ||
+            message.includes('Effect spawned')) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Log a message
    */
   log(level, message, data = null, context = null) {
     if (!this.shouldLog(level)) {
+      return;
+    }
+
+    // Filter debug spam from specific subsystems
+    if (this.shouldFilterMessage(level, message, context)) {
       return;
     }
 
