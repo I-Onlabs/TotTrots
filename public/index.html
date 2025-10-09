@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TotTrots - Game Refactored</title>
+    <meta name="description" content="A comprehensive game architecture refactoring project featuring modular design, cross-cutting concerns integration, and advanced accessibility features">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/styles/main.css" as="style">
+    <link rel="preload" href="/src/GameRefactored.js" as="script">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/src/styles/main.css">
+    
+    <!-- Accessibility meta tags -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="color-scheme" content="light dark">
+    
+    <!-- Open Graph meta tags -->
+    <meta property="og:title" content="TotTrots - Game Refactored">
+    <meta property="og:description" content="A comprehensive game architecture refactoring project">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tottrots-game.com">
+    
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TotTrots - Game Refactored">
+    <meta name="twitter:description" content="A comprehensive game architecture refactoring project">
+</head>
+<body>
+    <!-- Skip links for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#navigation" class="skip-link">Skip to navigation</a>
+    <a href="#game-controls" class="skip-link">Skip to game controls</a>
+    
+    <!-- Main game container -->
+    <div id="game-container" class="game-container">
+        <!-- Game area -->
+        <div id="game-area" class="game-area" tabindex="0" role="application" aria-label="Game area">
+            <!-- Game UI overlay -->
+            <div class="game-ui">
+                <!-- Game HUD -->
+                <div class="game-hud">
+                    <div class="hud-left">
+                        <div class="game-score" id="game-score" aria-live="polite" aria-label="Current score">Score: 0</div>
+                        <div class="game-level" id="game-level" aria-live="polite" aria-label="Current level">Level: 1</div>
+                    </div>
+                    <div class="hud-right">
+                        <div class="game-lives" id="game-lives" aria-live="polite" aria-label="Lives remaining">
+                            <svg class="life-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span id="lives-count">3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Achievement notifications -->
+                <div id="achievement-notifications" class="achievement-notifications" aria-live="polite" aria-label="Achievement notifications"></div>
+                
+                <!-- Daily challenge progress -->
+                <div id="daily-challenges" class="daily-challenges" aria-live="polite" aria-label="Daily challenges">
+                    <h3>Daily Challenges</h3>
+                    <div id="challenge-list" class="challenge-list"></div>
+                </div>
+            </div>
+            
+            <!-- Pause menu (hidden by default) -->
+            <div id="pause-menu" class="pause-menu" role="dialog" aria-labelledby="pause-title" aria-hidden="true">
+                <h2 id="pause-title">Game Paused</h2>
+                <div class="menu-buttons">
+                    <button id="resume-btn" class="btn btn-primary" aria-label="Resume game">Resume</button>
+                    <button id="settings-btn" class="btn btn-secondary" aria-label="Open settings">Settings</button>
+                    <button id="main-menu-btn" class="btn btn-secondary" aria-label="Return to main menu">Main Menu</button>
+                </div>
+            </div>
+            
+            <!-- Settings menu (hidden by default) -->
+            <div id="settings-menu" class="settings-menu" role="dialog" aria-labelledby="settings-title" aria-hidden="true">
+                <h2 id="settings-title">Settings</h2>
+                <div class="settings-content">
+                    <!-- Game settings -->
+                    <fieldset class="settings-group">
+                        <legend>Game Settings</legend>
+                        <div class="setting-item">
+                            <label for="debug-toggle" class="form-label">Debug Mode</label>
+                            <input type="checkbox" id="debug-toggle" class="form-control" aria-describedby="debug-help">
+                            <small id="debug-help" class="setting-help">Enable debug logging and developer tools</small>
+                        </div>
+                        <div class="setting-item">
+                            <label for="achievements-toggle" class="form-label">Achievements</label>
+                            <input type="checkbox" id="achievements-toggle" class="form-control" checked aria-describedby="achievements-help">
+                            <small id="achievements-help" class="setting-help">Enable achievement system</small>
+                        </div>
+                        <div class="setting-item">
+                            <label for="challenges-toggle" class="form-label">Daily Challenges</label>
+                            <input type="checkbox" id="challenges-toggle" class="form-control" checked aria-describedby="challenges-help">
+                            <small id="challenges-help" class="setting-help">Enable daily challenges</small>
+                        </div>
+                    </fieldset>
+                    
+                    <!-- Accessibility settings -->
+                    <fieldset class="settings-group">
+                        <legend>Accessibility</legend>
+                        <div class="setting-item">
+                            <label for="screen-reader-toggle" class="form-label">Screen Reader Support</label>
+                            <input type="checkbox" id="screen-reader-toggle" class="form-control" aria-describedby="screen-reader-help">
+                            <small id="screen-reader-help" class="setting-help">Enable screen reader announcements</small>
+                        </div>
+                        <div class="setting-item">
+                            <label for="high-contrast-toggle" class="form-label">High Contrast</label>
+                            <input type="checkbox" id="high-contrast-toggle" class="form-control" aria-describedby="high-contrast-help">
+                            <small id="high-contrast-help" class="setting-help">Enable high contrast mode</small>
+                        </div>
+                        <div class="setting-item">
+                            <label for="colorblind-select" class="form-label">Colorblind Support</label>
+                            <select id="colorblind-select" class="form-control" aria-describedby="colorblind-help">
+                                <option value="none">None</option>
+                                <option value="protanopia">Protanopia</option>
+                                <option value="deuteranopia">Deuteranopia</option>
+                                <option value="tritanopia">Tritanopia</option>
+                            </select>
+                            <small id="colorblind-help" class="setting-help">Select colorblind mode</small>
+                        </div>
+                        <div class="setting-item">
+                            <label for="text-scaling-slider" class="form-label">Text Scaling</label>
+                            <input type="range" id="text-scaling-slider" class="form-control" min="0.5" max="3.0" step="0.25" value="1.0" aria-describedby="text-scaling-help">
+                            <small id="text-scaling-help" class="setting-help">Adjust text size (0.5x to 3.0x)</small>
+                        </div>
+                        <div class="setting-item">
+                            <label for="motion-reduction-toggle" class="form-label">Reduce Motion</label>
+                            <input type="checkbox" id="motion-reduction-toggle" class="form-control" aria-describedby="motion-reduction-help">
+                            <small id="motion-reduction-help" class="setting-help">Reduce animations and motion</small>
+                        </div>
+                    </fieldset>
+                    
+                    <!-- Audio settings -->
+                    <fieldset class="settings-group">
+                        <legend>Audio</legend>
+                        <div class="setting-item">
+                            <label for="master-volume-slider" class="form-label">Master Volume</label>
+                            <input type="range" id="master-volume-slider" class="form-control" min="0" max="1" step="0.1" value="1.0" aria-describedby="master-volume-help">
+                            <small id="master-volume-help" class="setting-help">Overall volume level</small>
+                        </div>
+                        <div class="setting-item">
+                            <label for="sfx-volume-slider" class="form-label">Sound Effects</label>
+                            <input type="range" id="sfx-volume-slider" class="form-control" min="0" max="1" step="0.1" value="0.8" aria-describedby="sfx-volume-help">
+                            <small id="sfx-volume-help" class="setting-help">Sound effects volume</small>
+                        </div>
+                        <div class="setting-item">
+                            <label for="music-volume-slider" class="form-label">Music</label>
+                            <input type="range" id="music-volume-slider" class="form-control" min="0" max="1" step="0.1" value="0.6" aria-describedby="music-volume-help">
+                            <small id="music-volume-help" class="setting-help">Background music volume</small>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="menu-buttons">
+                    <button id="save-settings-btn" class="btn btn-primary" aria-label="Save settings">Save</button>
+                    <button id="cancel-settings-btn" class="btn btn-secondary" aria-label="Cancel settings changes">Cancel</button>
+                </div>
+            </div>
+            
+            <!-- Main menu (hidden by default) -->
+            <div id="main-menu" class="main-menu" role="dialog" aria-labelledby="main-menu-title" aria-hidden="true">
+                <h2 id="main-menu-title">TotTrots Game</h2>
+                <div class="menu-buttons">
+                    <button id="start-game-btn" class="btn btn-primary btn-lg" aria-label="Start new game">Start Game</button>
+                    <button id="continue-game-btn" class="btn btn-secondary btn-lg" aria-label="Continue saved game" disabled>Continue</button>
+                    <button id="load-game-btn" class="btn btn-secondary btn-lg" aria-label="Load saved game">Load Game</button>
+                    <button id="settings-menu-btn" class="btn btn-secondary btn-lg" aria-label="Open settings">Settings</button>
+                    <button id="achievements-btn" class="btn btn-secondary btn-lg" aria-label="View achievements">Achievements</button>
+                    <button id="quit-game-btn" class="btn btn-error btn-lg" aria-label="Quit game">Quit</button>
+                </div>
+            </div>
+            
+            <!-- Loading screen -->
+            <div id="loading-screen" class="loading-screen" role="status" aria-label="Loading game">
+                <div class="loading-content">
+                    <div class="loading-spinner" aria-hidden="true"></div>
+                    <p>Loading game...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav id="navigation" class="navigation" role="navigation" aria-label="Game navigation">
+            <ul class="nav-list">
+                <li><a href="#game-area" class="nav-link">Game</a></li>
+                <li><a href="#achievements" class="nav-link">Achievements</a></li>
+                <li><a href="#challenges" class="nav-link">Challenges</a></li>
+                <li><a href="#settings" class="nav-link">Settings</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Game controls -->
+        <div id="game-controls" class="game-controls" role="region" aria-label="Game controls">
+            <div class="control-group">
+                <h3>Keyboard Controls</h3>
+                <ul class="control-list">
+                    <li><kbd>WASD</kbd> or <kbd>Arrow Keys</kbd> - Move</li>
+                    <li><kbd>Space</kbd> - Jump</li>
+                    <li><kbd>E</kbd> - Interact</li>
+                    <li><kbd>Escape</kbd> - Pause/Menu</li>
+                    <li><kbd>Tab</kbd> - Navigate UI</li>
+                </ul>
+            </div>
+            <div class="control-group">
+                <h3>Mouse Controls</h3>
+                <ul class="control-list">
+                    <li>Left Click - Select/Activate</li>
+                    <li>Right Click - Context Menu</li>
+                    <li>Scroll - Navigate</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Accessibility announcements -->
+    <div id="accessibility-announcements" aria-live="polite" aria-atomic="true"></div>
+    
+    <!-- Game status -->
+    <div id="game-status" class="game-status" aria-live="polite" aria-label="Game status"></div>
+    
+    <!-- Scripts -->
+    <script type="module" src="/src/GameRefactored.js"></script>
+    <script type="module">
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Show loading screen
+                const loadingScreen = document.getElementById('loading-screen');
+                loadingScreen.style.display = 'flex';
+                
+                // Import and initialize the game
+                const { GameRefactored } = await import('/src/GameRefactored.js');
+                
+                // Create game instance
+                const game = new GameRefactored({
+                    debug: true,
+                    enableAchievements: true,
+                    enableDailyChallenges: true,
+                    enableAccessibility: true
+                });
+                
+                // Set up UI event handlers
+                setupUIEventHandlers(game);
+                
+                // Start the game
+                await game.start();
+                
+                // Hide loading screen
+                loadingScreen.style.display = 'none';
+                
+                // Focus on game area
+                document.getElementById('game-area').focus();
+                
+                console.log('Game initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize game:', error);
+                document.getElementById('loading-screen').innerHTML = 
+                    '<div class="error-content"><h2>Failed to load game</h2><p>Please refresh the page to try again.</p></div>';
+            }
+        });
+        
+        // Set up UI event handlers
+        function setupUIEventHandlers(game) {
+            // Pause menu handlers
+            document.getElementById('resume-btn').addEventListener('click', () => {
+                game.resume();
+                hidePauseMenu();
+            });
+            
+            document.getElementById('settings-btn').addEventListener('click', () => {
+                hidePauseMenu();
+                showSettingsMenu();
+            });
+            
+            document.getElementById('main-menu-btn').addEventListener('click', () => {
+                game.pause();
+                hidePauseMenu();
+                showMainMenu();
+            });
+            
+            // Settings menu handlers
+            document.getElementById('save-settings-btn').addEventListener('click', () => {
+                saveSettings(game);
+                hideSettingsMenu();
+            });
+            
+            document.getElementById('cancel-settings-btn').addEventListener('click', () => {
+                hideSettingsMenu();
+            });
+            
+            // Main menu handlers
+            document.getElementById('start-game-btn').addEventListener('click', () => {
+                hideMainMenu();
+                game.resume();
+            });
+            
+            document.getElementById('settings-menu-btn').addEventListener('click', () => {
+                hideMainMenu();
+                showSettingsMenu();
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    if (isMenuVisible('settings-menu')) {
+                        hideSettingsMenu();
+                    } else if (isMenuVisible('main-menu')) {
+                        hideMainMenu();
+                    } else if (isMenuVisible('pause-menu')) {
+                        hidePauseMenu();
+                    } else {
+                        game.pause();
+                        showPauseMenu();
+                    }
+                }
+            });
+            
+            // Accessibility settings handlers
+            setupAccessibilityHandlers(game);
+        }
+        
+        // Menu visibility functions
+        function showPauseMenu() {
+            document.getElementById('pause-menu').style.display = 'block';
+            document.getElementById('pause-menu').setAttribute('aria-hidden', 'false');
+            document.getElementById('resume-btn').focus();
+        }
+        
+        function hidePauseMenu() {
+            document.getElementById('pause-menu').style.display = 'none';
+            document.getElementById('pause-menu').setAttribute('aria-hidden', 'true');
+        }
+        
+        function showSettingsMenu() {
+            document.getElementById('settings-menu').style.display = 'block';
+            document.getElementById('settings-menu').setAttribute('aria-hidden', 'false');
+            document.getElementById('save-settings-btn').focus();
+        }
+        
+        function hideSettingsMenu() {
+            document.getElementById('settings-menu').style.display = 'none';
+            document.getElementById('settings-menu').setAttribute('aria-hidden', 'true');
+        }
+        
+        function showMainMenu() {
+            document.getElementById('main-menu').style.display = 'block';
+            document.getElementById('main-menu').setAttribute('aria-hidden', 'false');
+            document.getElementById('start-game-btn').focus();
+        }
+        
+        function hideMainMenu() {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('main-menu').setAttribute('aria-hidden', 'true');
+        }
+        
+        function isMenuVisible(menuId) {
+            const menu = document.getElementById(menuId);
+            return menu.style.display !== 'none' && menu.getAttribute('aria-hidden') !== 'true';
+        }
+        
+        // Settings handlers
+        function saveSettings(game) {
+            const settings = {
+                debug: document.getElementById('debug-toggle').checked,
+                enableAchievements: document.getElementById('achievements-toggle').checked,
+                enableDailyChallenges: document.getElementById('challenges-toggle').checked,
+                screenReader: document.getElementById('screen-reader-toggle').checked,
+                highContrast: document.getElementById('high-contrast-toggle').checked,
+                colorblindMode: document.getElementById('colorblind-select').value,
+                textScaling: parseFloat(document.getElementById('text-scaling-slider').value),
+                motionReduction: document.getElementById('motion-reduction-toggle').checked,
+                masterVolume: parseFloat(document.getElementById('master-volume-slider').value),
+                sfxVolume: parseFloat(document.getElementById('sfx-volume-slider').value),
+                musicVolume: parseFloat(document.getElementById('music-volume-slider').value)
+            };
+            
+            // Update game configuration
+            game.updateConfig(settings);
+            
+            // Apply accessibility settings
+            applyAccessibilitySettings(settings);
+        }
+        
+        // Accessibility handlers
+        function setupAccessibilityHandlers(game) {
+            // Screen reader toggle
+            document.getElementById('screen-reader-toggle').addEventListener('change', (event) => {
+                const enabled = event.target.checked;
+                game.getManager('accessibility')?.updateSettings({ screenReader: enabled });
+            });
+            
+            // High contrast toggle
+            document.getElementById('high-contrast-toggle').addEventListener('change', (event) => {
+                const enabled = event.target.checked;
+                document.documentElement.classList.toggle('high-contrast', enabled);
+            });
+            
+            // Colorblind mode
+            document.getElementById('colorblind-select').addEventListener('change', (event) => {
+                const mode = event.target.value;
+                document.documentElement.className = document.documentElement.className.replace(/colorblind-\w+/g, '');
+                if (mode !== 'none') {
+                    document.documentElement.classList.add(`colorblind-${mode}`);
+                }
+            });
+            
+            // Text scaling
+            document.getElementById('text-scaling-slider').addEventListener('input', (event) => {
+                const scale = parseFloat(event.target.value);
+                document.documentElement.style.setProperty('--text-scale', scale);
+            });
+            
+            // Motion reduction
+            document.getElementById('motion-reduction-toggle').addEventListener('change', (event) => {
+                const enabled = event.target.checked;
+                document.documentElement.classList.toggle('motion-reduced', enabled);
+            });
+        }
+        
+        // Apply accessibility settings
+        function applyAccessibilitySettings(settings) {
+            // Apply high contrast
+            document.documentElement.classList.toggle('high-contrast', settings.highContrast);
+            
+            // Apply colorblind mode
+            document.documentElement.className = document.documentElement.className.replace(/colorblind-\w+/g, '');
+            if (settings.colorblindMode !== 'none') {
+                document.documentElement.classList.add(`colorblind-${settings.colorblindMode}`);
+            }
+            
+            // Apply text scaling
+            document.documentElement.style.setProperty('--text-scale', settings.textScaling);
+            
+            // Apply motion reduction
+            document.documentElement.classList.toggle('motion-reduced', settings.motionReduction);
+        }
+    </script>
+</body>
+</html>
