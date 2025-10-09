@@ -133,19 +133,19 @@ export class GameManager {
       'player:scoreChanged',
       this.handleScoreChange.bind(this)
     );
-    this.eventBus.removeListener(
+    this.eventBus.off(
       'player:damaged',
       this.handlePlayerDamaged.bind(this)
     );
-    this.eventBus.removeListener(
+    this.eventBus.off(
       'player:itemCollected',
       this.handleItemCollected.bind(this)
     );
-    this.eventBus.removeListener(
+    this.eventBus.off(
       'player:levelCompleted',
       this.handleLevelCompleted.bind(this)
     );
-    this.eventBus.removeListener('game:input', this.handleGameInput.bind(this));
+    this.eventBus.off('game:input', this.handleGameInput.bind(this));
     this.eventBus.removeListener(
       'game:configChanged',
       this.handleConfigChange.bind(this)
