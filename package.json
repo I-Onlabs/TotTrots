@@ -29,7 +29,9 @@
     "ci:all": "npm run ci:format && npm run ci:lint && npm run ci:test && npm run ci:build",
     "precommit": "npm run ci:all",
     "prepush": "npm run ci:all",
-    "validate": "npm run format:check && npm run lint && npm run test:ci"
+    "validate": "npm run format:check && npm run lint && npm run test:ci",
+    "validate:implementation": "node validate-implementation.js",
+    "validate:all": "npm run validate && npm run validate:implementation"
   },
   "keywords": [
     "game",
