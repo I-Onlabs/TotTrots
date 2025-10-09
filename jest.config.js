@@ -12,9 +12,6 @@ export default {
     '<rootDir>/tests/**/*.test.js',
     '<rootDir>/src/**/*.test.js'
   ],
-  moduleNameMapping: {
-    '^@/(.*)$': '<rootDir>/src/$1'
-  },
   transform: {
     '^.+\\.js$': 'babel-jest'
   },

@@ -367,6 +367,7 @@ export class Player {
             this.velocityX = speed;
             this.animationState = 'walking';
         } else {
+            this.velocityX = 0;
             this.animationState = 'idle';
         }
         
@@ -374,6 +375,8 @@ export class Player {
             this.velocityZ = -speed;
         } else if (this.inputState.down) {
             this.velocityZ = speed;
+        } else {
+            this.velocityZ = 0;
         }
     }
 

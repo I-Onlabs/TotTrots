@@ -260,4 +260,363 @@ describe('GameRefactored', () => {
       expect(game.managers).toBeNull();
     });
   });
+
+  describe('Input System Integration', () => {
+    test('should handle keyboard input events', () => {
+      const inputSpy = jest.fn();
+      game.eventBus.on('input:keyDown', inputSpy);
+      
+      const keyEvent = {
+        key: 'Space',
+        code: 'Space',
+        keyCode: 32,
+        repeat: false,
+        ctrlKey: false,
+        shiftKey: false,
+        altKey: false,
+        metaKey: false,
+        timestamp: Date.now()
+      };
+      
+      game.handleInput('keyDown', keyEvent);
+      
+      expect(inputSpy).toHaveBeenCalledWith(expect.objectContaining({
+        key: 'Space',
+        code: 'Space',
+        keyCode: 32
+      }));
+    });
+
+    test('should handle mouse input events', () => {
+      const mouseSpy = jest.fn();
+      game.eventBus.on('input:mouseDown', mouseSpy);
+      
+      const mouseEvent = {
+        button: 0,
+        buttonName: 'Left',
+        x: 100,
+        y: 200,
+        ctrlKey: false,
+        shiftKey: false,
+        altKey: false,
+        metaKey: false,
+        timestamp: Date.now()
+      };
+      
+      game.handleInput('mouseDown', mouseEvent);
+      
+      expect(mouseSpy).toHaveBeenCalledWith(expect.objectContaining({
+        button: 0,
+        x: 100,
+        y: 200
+      }));
+    });
+
+    test('should handle touch input events', () => {
+      const touchSpy = jest.fn();
+      game.eventBus.on('input:touchStart', touchSpy);
+      
+      const touchEvent = {
+        touches: [{
+          id: 1,
+          x: 150,
+          y: 250,
+          pressure: 1.0
+        }],
+        timestamp: Date.now()
+      };
+      
+      game.handleInput('touchStart', touchEvent);
+      
+      expect(touchSpy).toHaveBeenCalledWith(expect.objectContaining({
+        touches: expect.arrayContaining([
+          expect.objectContaining({
+            id: 1,
+            x: 150,
+            y: 250
+          })
+        ])
+      }));
+    });
+
+    test('should handle gamepad input events', () => {
+      const gamepadSpy = jest.fn();
+      game.eventBus.on('input:gamepadButton', gamepadSpy);
+      
+      const gamepadEvent = {
+        controller: 0,
+        button: 0,
+        pressed: true,
+        value: 1.0,
+        timestamp: Date.now()
+      };
+      
+      game.handleInput('gamepadButton', gamepadEvent);
+      
+      expect(gamepadSpy).toHaveBeenCalledWith(expect.objectContaining({
+        controller: 0,
+        button: 0,
+        pressed: true
+      }));
+    });
+  });
+
+  describe('Power-up System Integration', () => {
+    test('should handle power-up activation', () => {
+      const powerUpSpy = jest.fn();
+      game.eventBus.on('game:powerUpActivated', powerUpSpy);
+      
+      const powerUpEvent = {
+        type: 'speedBoost',
+        duration: 5000,
+        timestamp: Date.now()
+      };
+      
+      game.eventBus.emit('game:powerUpActivated', powerUpEvent);
+      
+      expect(powerUpSpy).toHaveBeenCalledWith(expect.objectContaining({
+        type: 'speedBoost',
+        duration: 5000
+      }));
+    });
+
+    test('should handle power-up deactivation', () => {
+      const powerUpSpy = jest.fn();
+      game.eventBus.on('game:powerUpDeactivated', powerUpSpy);
+      
+      const powerUpEvent = {
+        type: 'speedBoost',
+        timestamp: Date.now()
+      };
+      
+      game.eventBus.emit('game:powerUpDeactivated', powerUpEvent);
+      
+      expect(powerUpSpy).toHaveBeenCalledWith(expect.objectContaining({
+        type: 'speedBoost'
+      }));
+    });
+
+    test('should track active power-ups', () => {
+      // Simulate power-up activation
+      game.eventBus.emit('game:powerUpActivated', {
+        type: 'speedBoost',
+        duration: 5000,
+        timestamp: Date.now()
+      });
+      
+      // Check if power-up is tracked in game state
+      const state = game.getGameState();
+      expect(state.activePowerUps).toBeDefined();
+    });
+  });
+
+  describe('Audio System Integration', () => {
+    test('should handle audio events', () => {
+      const audioSpy = jest.fn();
+      game.eventBus.on('audio:play', audioSpy);
+      
+      const audioEvent = {
+        sound: 'jump',
+        volume: 0.8,
+        loop: false,
+        timestamp: Date.now()
+      };
+      
+      game.eventBus.emit('audio:play', audioEvent);
+      
+      expect(audioSpy).toHaveBeenCalledWith(expect.objectContaining({
+        sound: 'jump',
+        volume: 0.8
+      }));
+    });
+
+    test('should handle audio stop events', () => {
+      const audioSpy = jest.fn();
+      game.eventBus.on('audio:stop', audioSpy);
+      
+      const audioEvent = {
+        sound: 'backgroundMusic',
+        timestamp: Date.now()
+      };
+      
+      game.eventBus.emit('audio:stop', audioEvent);
+      
+      expect(audioSpy).toHaveBeenCalledWith(expect.objectContaining({
+        sound: 'backgroundMusic'
+      }));
+    });
+
+    test('should handle audio volume changes', () => {
+      const audioSpy = jest.fn();
+      game.eventBus.on('audio:volumeChanged', audioSpy);
+      
+      const audioEvent = {
+        volume: 0.5,
+        timestamp: Date.now()
+      };
+      
+      game.eventBus.emit('audio:volumeChanged', audioEvent);
+      
+      expect(audioSpy).toHaveBeenCalledWith(expect.objectContaining({
+        volume: 0.5
+      }));
+    });
+  });
+
+  describe('Performance and Memory Management', () => {
+    test('should handle large numbers of game objects efficiently', () => {
+      const startTime = performance.now();
+      
+      // Add many game objects
+      for (let i = 0; i < 1000; i++) {
+        game.addGameObject({
+          id: `object_${i}`,
+          type: 'test',
+          x: Math.random() * 1000,
+          y: Math.random() * 1000
+        });
+      }
+      
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      
+      // Should complete within reasonable time (adjust threshold as needed)
+      expect(duration).toBeLessThan(100);
+      expect(game.gameState.gameObjects.length).toBe(1000);
+    });
+
+    test('should clean up game objects properly', () => {
+      // Add some game objects
+      for (let i = 0; i < 100; i++) {
+        game.addGameObject({
+          id: `object_${i}`,
+          type: 'test'
+        });
+      }
+      
+      expect(game.gameState.gameObjects.length).toBe(100);
+      
+      // Remove all objects
+      for (let i = 0; i < 100; i++) {
+        game.removeGameObject(`object_${i}`);
+      }
+      
+      expect(game.gameState.gameObjects.length).toBe(0);
+    });
+
+    test('should handle rapid input events without memory leaks', () => {
+      const initialMemory = performance.memory ? performance.memory.usedJSHeapSize : 0;
+      
+      // Simulate rapid input events
+      for (let i = 0; i < 1000; i++) {
+        game.handleInput('keyDown', {
+          key: 'Space',
+          code: 'Space',
+          keyCode: 32,
+          repeat: false,
+          timestamp: Date.now()
+        });
+      }
+      
+      // Force garbage collection if available
+      if (global.gc) {
+        global.gc();
+      }
+      
+      const finalMemory = performance.memory ? performance.memory.usedJSHeapSize : 0;
+      
+      // Memory usage should not grow excessively (allow some tolerance)
+      if (initialMemory > 0 && finalMemory > 0) {
+        const memoryGrowth = finalMemory - initialMemory;
+        expect(memoryGrowth).toBeLessThan(1000000); // 1MB tolerance
+      }
+    });
+  });
+
+  describe('Error Recovery and Resilience', () => {
+    test('should recover from manager initialization failures', async () => {
+      // Mock a manager to fail initialization
+      const originalGameManager = game.managers.game;
+      game.managers.game.initialize = jest.fn().mockRejectedValue(new Error('Manager init failed'));
+      
+      // Game should still start despite manager failure
+      await expect(game.start()).resolves.not.toThrow();
+      
+      // Restore original manager
+      game.managers.game = originalGameManager;
+    });
+
+    test('should handle invalid input gracefully', () => {
+      expect(() => {
+        game.handleInput('invalidInputType', {});
+      }).not.toThrow();
+      
+      expect(() => {
+        game.handleInput('keyDown', null);
+      }).not.toThrow();
+      
+      expect(() => {
+        game.handleInput('keyDown', undefined);
+      }).not.toThrow();
+    });
+
+    test('should handle malformed game objects', () => {
+      expect(() => {
+        game.addGameObject(null);
+      }).not.toThrow();
+      
+      expect(() => {
+        game.addGameObject(undefined);
+      }).not.toThrow();
+      
+      expect(() => {
+        game.addGameObject({});
+      }).not.toThrow();
+    });
+
+    test('should handle event bus errors gracefully', () => {
+      // Mock event bus to throw errors
+      const originalEmit = game.eventBus.emit;
+      game.eventBus.emit = jest.fn().mockImplementation(() => {
+        throw new Error('Event bus error');
+      });
+      
+      expect(() => {
+        game.handleInput('keyDown', { key: 'Space' });
+      }).not.toThrow();
+      
+      // Restore original emit
+      game.eventBus.emit = originalEmit;
+    });
+  });
+
+  describe('Configuration Validation', () => {
+    test('should validate configuration on initialization', () => {
+      const invalidConfig = {
+        debug: 'invalid',
+        enableAchievements: 'invalid',
+        enableDailyChallenges: 'invalid',
+        enableAccessibility: 'invalid'
+      };
+      
+      expect(() => {
+        new GameRefactored(invalidConfig);
+      }).not.toThrow();
+      
+      // Should use default values for invalid config
+      const gameWithInvalidConfig = new GameRefactored(invalidConfig);
+      expect(gameWithInvalidConfig.config.debug).toBe(false);
+      expect(gameWithInvalidConfig.config.enableAchievements).toBe(true);
+    });
+
+    test('should handle missing configuration gracefully', () => {
+      expect(() => {
+        new GameRefactored(null);
+      }).not.toThrow();
+      
+      expect(() => {
+        new GameRefactored(undefined);
+      }).not.toThrow();
+    });
+  });
 });

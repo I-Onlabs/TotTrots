@@ -419,7 +419,9 @@ afterEach(() => {
   localStorageMock.clear();
   sessionStorageMock.clear();
   fetch.mockClear();
-  performance.now.mockClear();
+  if (performance.now.mockClear) {
+    performance.now.mockClear();
+  }
   requestAnimationFrame.mockClear();
   cancelAnimationFrame.mockClear();
 });

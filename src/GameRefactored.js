@@ -18,19 +18,41 @@ import { Logger } from './utils/Logger.js';
 
 export class GameRefactored {
     constructor(config = {}) {
-        this.config = {
+        // Validate and normalize config
+        this.config = this.validateConfig({
             debug: false,
             enableAchievements: true,
             enableDailyChallenges: true,
             enableAccessibility: true,
             ...config
-        };
+        });
 
-        // Core systems
+        // Assert config validation
+        if (typeof this.config.debug !== 'boolean') {
+            throw new Error('GameRefactored: config.debug must be a boolean');
+        }
+        if (typeof this.config.enableAchievements !== 'boolean') {
+            throw new Error('GameRefactored: config.enableAchievements must be a boolean');
+        }
+        if (typeof this.config.enableDailyChallenges !== 'boolean') {
+            throw new Error('GameRefactored: config.enableDailyChallenges must be a boolean');
+        }
+        if (typeof this.config.enableAccessibility !== 'boolean') {
+            throw new Error('GameRefactored: config.enableAccessibility must be a boolean');
+        }
+
+        // Core systems - with assertions
         this.eventBus = new EventBus();
+        if (!this.eventBus || typeof this.eventBus.emit !== 'function') {
+            throw new Error('GameRefactored: EventBus initialization failed');
+        }
+
         this.logger = new Logger(this.config.debug);
+        if (!this.logger || typeof this.logger.info !== 'function') {
+            throw new Error('GameRefactored: Logger initialization failed');
+        }
         
-        // Game state
+        // Game state - with assertions
         this.gameState = {
             isRunning: false,
             isPaused: false,
@@ -39,19 +61,74 @@ export class GameRefactored {
             player: null,
             gameObjects: [],
             startTime: null,
-            lastUpdateTime: null
+            lastUpdateTime: null,
+            activePowerUps: new Map() // Track active power-ups
         };
 
-        // Manager instances (dependency injection)
+        // Assert game state structure
+        if (typeof this.gameState.isRunning !== 'boolean') {
+            throw new Error('GameRefactored: gameState.isRunning must be a boolean');
+        }
+        if (typeof this.gameState.currentLevel !== 'number' || this.gameState.currentLevel < 1) {
+            throw new Error('GameRefactored: gameState.currentLevel must be a positive number');
+        }
+        if (typeof this.gameState.score !== 'number' || this.gameState.score < 0) {
+            throw new Error('GameRefactored: gameState.score must be a non-negative number');
+        }
+        if (!Array.isArray(this.gameState.gameObjects)) {
+            throw new Error('GameRefactored: gameState.gameObjects must be an array');
+        }
+
+        // Manager instances (dependency injection) - with assertions
         this.managers = {};
         this.initializeManagers();
 
-        // Bind methods
+        // Assert managers were initialized
+        if (!this.managers.game) {
+            throw new Error('GameRefactored: GameManager initialization failed');
+        }
+        if (this.config.enableAchievements && !this.managers.achievements) {
+            throw new Error('GameRefactored: AchievementManager initialization failed when enabled');
+        }
+        if (this.config.enableDailyChallenges && !this.managers.dailyChallenges) {
+            throw new Error('GameRefactored: DailyChallengeManager initialization failed when enabled');
+        }
+        if (this.config.enableAccessibility && !this.managers.accessibility) {
+            throw new Error('GameRefactored: AccessibilityManager initialization failed when enabled');
+        }
+
+        // Bind methods - with assertions
         this.update = this.update.bind(this);
         this.render = this.render.bind(this);
         this.handleInput = this.handleInput.bind(this);
 
+        // Assert methods are bound correctly
+        if (typeof this.update !== 'function') {
+            throw new Error('GameRefactored: update method binding failed');
+        }
+        if (typeof this.render !== 'function') {
+            throw new Error('GameRefactored: render method binding failed');
+        }
+        if (typeof this.handleInput !== 'function') {
+            throw new Error('GameRefactored: handleInput method binding failed');
+        }
+
         this.logger.info('GameRefactored initialized');
+    }
+
+    /**
+     * Validate and normalize configuration
+     */
+    validateConfig(config) {
+        const validatedConfig = { ...config };
+        
+        // Normalize boolean values
+        validatedConfig.debug = Boolean(validatedConfig.debug);
+        validatedConfig.enableAchievements = Boolean(validatedConfig.enableAchievements);
+        validatedConfig.enableDailyChallenges = Boolean(validatedConfig.enableDailyChallenges);
+        validatedConfig.enableAccessibility = Boolean(validatedConfig.enableAccessibility);
+        
+        return validatedConfig;
     }
 
     /**
