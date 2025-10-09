@@ -563,10 +563,18 @@ export class SettingsUI {
    * Get setting value by path
    */
   getSettingValue(path) {
+    if (!path || typeof path !== 'string') {
+      return undefined;
+    }
+    
     const keys = path.split('.');
     let value = this.settings;
     for (const key of keys) {
-      value = value[key];
+      if (value && typeof value === 'object' && key in value) {
+        value = value[key];
+      } else {
+        return undefined;
+      }
     }
     return value;
   }

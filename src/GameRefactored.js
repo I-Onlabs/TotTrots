@@ -782,7 +782,7 @@ export class GameRefactored {
     }
 
     // Clear all event listeners
-    this.eventBus.removeAllListeners();
+    this.eventBus.removeAllListeners(); // Remove all listeners (no event parameter)
 
     // Clear game state
     this.gameState = null;
