@@ -129,7 +129,7 @@ export class GameManager {
    * Remove event handlers
    */
   removeEventHandlers() {
-    this.eventBus.removeListener(
+    this.eventBus.off(
       'player:scoreChanged',
       this.handleScoreChange.bind(this)
     );
