@@ -114,11 +114,11 @@ class GameManager {
    * Remove event handlers
    */
   removeEventHandlers() {
-    this.eventBus.removeListener('player:scoreChanged', this.handleScoreChange.bind(this));
-    this.eventBus.removeListener('player:damaged', this.handlePlayerDamaged.bind(this));
-    this.eventBus.removeListener('player:itemCollected', this.handleItemCollected.bind(this));
-    this.eventBus.removeListener('player:levelCompleted', this.handleLevelCompleted.bind(this));
-    this.eventBus.removeListener('game:input', this.handleGameInput.bind(this));
+    this.eventBus.off('player:scoreChanged', this.handleScoreChange.bind(this));
+    this.eventBus.off('player:damaged', this.handlePlayerDamaged.bind(this));
+    this.eventBus.off('player:itemCollected', this.handleItemCollected.bind(this));
+    this.eventBus.off('player:levelCompleted', this.handleLevelCompleted.bind(this));
+    this.eventBus.off('game:input', this.handleGameInput.bind(this));
     this.eventBus.removeListener('game:configChanged', this.handleConfigChange.bind(this));
     this.eventBus.removeListener('achievement:unlocked', this.handleAchievementUnlock.bind(this));
     this.eventBus.removeListener('dailyChallenge:completed', this.handleDailyChallengeCompletion.bind(this));
