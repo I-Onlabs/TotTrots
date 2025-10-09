@@ -1,0 +1,485 @@
+/**
+ * mobile-controls.css - Mobile controls styling and responsive design
+ *
+ * This stylesheet provides:
+ * - Virtual joystick styling
+ * - Action button styling
+ * - Mobile-specific responsive design
+ * - Touch-friendly UI elements
+ * - Accessibility enhancements
+ * - Performance optimizations
+ */
+
+/* Mobile Controls Container */
+.mobile-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  pointer-events: none;
+  z-index: 1000;
+  display: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.mobile-controls.visible {
+  display: block;
+}
+
+/* Virtual Joystick */
+.virtual-joystick {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  width: 120px;
+  height: 120px;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.joystick-base {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.joystick-base:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.joystick-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.joystick-knob:active {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Action Buttons */
+.action-buttons {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.action-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  color: #000;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.action-button:active {
+  transform: scale(0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.action-button.jump {
+  background: rgba(76, 175, 80, 0.8);
+  color: white;
+}
+
+.action-button.interact {
+  background: rgba(33, 150, 243, 0.8);
+  color: white;
+}
+
+.action-button.crouch {
+  background: rgba(255, 152, 0, 0.8);
+  color: white;
+}
+
+.action-button.run {
+  background: rgba(156, 39, 176, 0.8);
+  color: white;
+}
+
+/* Menu and Pause Buttons */
+.menu-button,
+.pause-button {
+  position: absolute;
+  top: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  color: #000;
+  font-size: 20px;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu-button {
+  right: 20px;
+}
+
+.pause-button {
+  left: 20px;
+}
+
+.menu-button:active,
+.pause-button:active {
+  transform: scale(0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .mobile-controls {
+    height: 150px;
+  }
+  
+  .virtual-joystick {
+    width: 100px;
+    height: 100px;
+    left: 15px;
+    bottom: 15px;
+  }
+  
+  .action-buttons {
+    right: 15px;
+    bottom: 15px;
+    gap: 8px;
+  }
+  
+  .action-button {
+    width: 50px;
+    height: 50px;
+    font-size: 10px;
+  }
+  
+  .menu-button,
+  .pause-button {
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
+    top: 15px;
+  }
+  
+  .menu-button {
+    right: 15px;
+  }
+  
+  .pause-button {
+    left: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .mobile-controls {
+    height: 180px;
+  }
+  
+  .virtual-joystick {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .action-button {
+    width: 70px;
+    height: 70px;
+    font-size: 14px;
+  }
+  
+  .menu-button,
+  .pause-button {
+    width: 70px;
+    height: 70px;
+    font-size: 24px;
+  }
+}
+
+/* Landscape Orientation */
+@media (orientation: landscape) {
+  .mobile-controls {
+    height: 120px;
+  }
+  
+  .virtual-joystick {
+    left: 10px;
+    bottom: 10px;
+  }
+  
+  .action-buttons {
+    right: 10px;
+    bottom: 10px;
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  .menu-button {
+    right: 10px;
+    top: 10px;
+  }
+  
+  .pause-button {
+    left: 10px;
+    top: 10px;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .joystick-base,
+  .action-button,
+  .menu-button,
+  .pause-button {
+    border-width: 1px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .joystick-base {
+    background: rgba(50, 50, 50, 0.8);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .action-button {
+    background: rgba(50, 50, 50, 0.8);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+  }
+  
+  .menu-button,
+  .pause-button {
+    background: rgba(50, 50, 50, 0.8);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .joystick-knob,
+  .action-button,
+  .menu-button,
+  .pause-button {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+.high-contrast .joystick-base {
+  background: white;
+  border-color: black;
+  border-width: 3px;
+}
+
+.high-contrast .action-button {
+  background: white;
+  border-color: black;
+  border-width: 3px;
+  color: black;
+}
+
+.high-contrast .menu-button,
+.high-contrast .pause-button {
+  background: white;
+  border-color: black;
+  border-width: 3px;
+  color: black;
+}
+
+/* Focus Indicators for Accessibility */
+.focus-indicators .action-button:focus,
+.focus-indicators .menu-button:focus,
+.focus-indicators .pause-button:focus {
+  outline: 3px solid #007acc;
+  outline-offset: 2px;
+}
+
+/* Large Text Support */
+.large-text .action-button {
+  font-size: 16px;
+}
+
+.large-text .menu-button,
+.large-text .pause-button {
+  font-size: 28px;
+}
+
+/* Touch Feedback */
+.action-button:active,
+.menu-button:active,
+.pause-button:active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Performance Optimizations */
+.mobile-controls * {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* iOS Safari Specific */
+@supports (-webkit-touch-callout: none) {
+  .mobile-controls {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .action-button,
+  .menu-button,
+  .pause-button {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* Android Chrome Specific */
+@supports (touch-action: manipulation) {
+  .action-button,
+  .menu-button,
+  .pause-button {
+    touch-action: manipulation;
+  }
+}
+
+/* Hover States for Devices with Mouse */
+@media (hover: hover) and (pointer: fine) {
+  .action-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .menu-button:hover,
+  .pause-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Loading States */
+.mobile-controls.loading .action-button,
+.mobile-controls.loading .menu-button,
+.mobile-controls.loading .pause-button {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Error States */
+.mobile-controls.error .action-button,
+.mobile-controls.error .menu-button,
+.mobile-controls.error .pause-button {
+  background: rgba(244, 67, 54, 0.8);
+  color: white;
+}
+
+/* Success States */
+.mobile-controls.success .action-button,
+.mobile-controls.success .menu-button,
+.mobile-controls.success .pause-button {
+  background: rgba(76, 175, 80, 0.8);
+  color: white;
+}
+
+/* Animation Classes */
+.mobile-controls.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.mobile-controls.fade-out {
+  animation: fadeOut 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* Pulse Animation for Active States */
+.action-button.pulse {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Shake Animation for Error States */
+.action-button.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
