@@ -13,7 +13,7 @@
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --error-color: #ef4444;
-  
+
   /* Neutral colors */
   --gray-50: #f8fafc;
   --gray-100: #f1f5f9;
@@ -25,23 +25,23 @@
   --gray-700: #334155;
   --gray-800: #1e293b;
   --gray-900: #0f172a;
-  
+
   /* Background colors */
   --bg-primary: #ffffff;
   --bg-secondary: var(--gray-50);
   --bg-tertiary: var(--gray-100);
   --bg-overlay: rgba(0, 0, 0, 0.5);
-  
+
   /* Text colors */
   --text-primary: var(--gray-900);
   --text-secondary: var(--gray-600);
   --text-muted: var(--gray-500);
   --text-inverse: #ffffff;
-  
+
   /* Border colors */
   --border-color: var(--gray-200);
   --border-focus: var(--primary-color);
-  
+
   /* Spacing scale */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -53,7 +53,7 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
-  
+
   /* Typography scale */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -63,31 +63,34 @@
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
-  
+
   /* Font weights */
   --font-normal: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
-  
+
   /* Border radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
   /* Transitions */
   --transition-fast: 150ms ease-in-out;
   --transition-normal: 250ms ease-in-out;
   --transition-slow: 350ms ease-in-out;
-  
+
   /* Z-index scale */
   --z-dropdown: 1000;
   --z-sticky: 1020;
@@ -97,7 +100,7 @@
   --z-popover: 1060;
   --z-tooltip: 1070;
   --z-toast: 1080;
-  
+
   /* Text scaling for accessibility */
   --text-scale: 1;
 }
@@ -186,9 +189,9 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: var(--text-base);
   font-weight: var(--font-normal);
   color: var(--text-primary);
@@ -197,18 +200,35 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0 0 var(--space-4) 0;
   font-weight: var(--font-semibold);
   line-height: 1.2;
 }
 
-h1 { font-size: var(--text-4xl); }
-h2 { font-size: var(--text-3xl); }
-h3 { font-size: var(--text-2xl); }
-h4 { font-size: var(--text-xl); }
-h5 { font-size: var(--text-lg); }
-h6 { font-size: var(--text-base); }
+h1 {
+  font-size: var(--text-4xl);
+}
+h2 {
+  font-size: var(--text-3xl);
+}
+h3 {
+  font-size: var(--text-2xl);
+}
+h4 {
+  font-size: var(--text-xl);
+}
+h5 {
+  font-size: var(--text-lg);
+}
+h6 {
+  font-size: var(--text-base);
+}
 
 p {
   margin: 0 0 var(--space-4) 0;
@@ -326,7 +346,9 @@ a:focus {
   background-clip: padding-box;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
   min-height: 44px; /* Accessibility: minimum touch target size */
 }
 
@@ -389,7 +411,11 @@ a:focus {
   position: relative;
   width: 100%;
   height: 100vh;
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
   overflow: hidden;
   outline: none; /* Remove default focus outline */
 }
@@ -535,13 +561,13 @@ a:focus {
     flex-direction: column;
     gap: var(--space-2);
   }
-  
+
   .pause-menu {
     margin: var(--space-4);
     min-width: auto;
     width: calc(100% - var(--space-8));
   }
-  
+
   .achievement-notification {
     right: var(--space-2);
     left: var(--space-2);
@@ -553,11 +579,11 @@ a:focus {
   :root {
     --text-scale: 0.9;
   }
-  
+
   .btn {
     min-height: 48px; /* Larger touch targets on mobile */
   }
-  
+
   .form-control {
     min-height: 48px;
   }
@@ -570,7 +596,7 @@ a:focus {
   .achievement-notification {
     display: none;
   }
-  
+
   .game-area {
     height: auto;
     background: white;

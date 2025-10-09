@@ -9,7 +9,7 @@ const localStorageMock = {
   removeItem: jest.fn(),
   clear: jest.fn(),
   length: 0,
-  key: jest.fn()
+  key: jest.fn(),
 };
 
 global.localStorage = localStorageMock;
@@ -21,7 +21,7 @@ const sessionStorageMock = {
   removeItem: jest.fn(),
   clear: jest.fn(),
   length: 0,
-  key: jest.fn()
+  key: jest.fn(),
 };
 
 global.sessionStorage = sessionStorageMock;
@@ -35,13 +35,13 @@ global.performance = {
   memory: {
     usedJSHeapSize: 1000000,
     totalJSHeapSize: 2000000,
-    jsHeapSizeLimit: 4000000
-  }
+    jsHeapSizeLimit: 4000000,
+  },
 };
 
 // Mock requestAnimationFrame
-global.requestAnimationFrame = jest.fn(cb => setTimeout(cb, 16));
-global.cancelAnimationFrame = jest.fn(id => clearTimeout(id));
+global.requestAnimationFrame = jest.fn((cb) => setTimeout(cb, 16));
+global.cancelAnimationFrame = jest.fn((id) => clearTimeout(id));
 
 // Mock AudioContext
 global.AudioContext = jest.fn(() => ({
@@ -49,15 +49,15 @@ global.AudioContext = jest.fn(() => ({
     connect: jest.fn(),
     start: jest.fn(),
     stop: jest.fn(),
-    frequency: { setValueAtTime: jest.fn() }
+    frequency: { setValueAtTime: jest.fn() },
   })),
   createGain: jest.fn(() => ({
     connect: jest.fn(),
-    gain: { setValueAtTime: jest.fn(), linearRampToValueAtTime: jest.fn() }
+    gain: { setValueAtTime: jest.fn(), linearRampToValueAtTime: jest.fn() },
   })),
   destination: {},
   currentTime: 0,
-  close: jest.fn()
+  close: jest.fn(),
 }));
 
 // Mock gamepad API
@@ -69,28 +69,28 @@ global.URLSearchParams = jest.fn(() => ({
   set: jest.fn(),
   has: jest.fn(),
   delete: jest.fn(),
-  entries: jest.fn(() => [])
+  entries: jest.fn(() => []),
 }));
 
 // Mock ResizeObserver
 global.ResizeObserver = jest.fn(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
-  disconnect: jest.fn()
+  disconnect: jest.fn(),
 }));
 
 // Mock IntersectionObserver
 global.IntersectionObserver = jest.fn(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
-  disconnect: jest.fn()
+  disconnect: jest.fn(),
 }));
 
 // Mock MutationObserver
 global.MutationObserver = jest.fn(() => ({
   observe: jest.fn(),
   disconnect: jest.fn(),
-  takeRecords: jest.fn(() => [])
+  takeRecords: jest.fn(() => []),
 }));
 
 // Mock console methods to reduce noise in tests
@@ -100,7 +100,7 @@ global.console = {
   debug: jest.fn(),
   info: jest.fn(),
   warn: jest.fn(),
-  error: jest.fn()
+  error: jest.fn(),
 };
 
 // Mock window.location
@@ -113,7 +113,7 @@ window.location = {
   hash: '',
   assign: jest.fn(),
   replace: jest.fn(),
-  reload: jest.fn()
+  reload: jest.fn(),
 };
 
 // Mock window.history
@@ -122,7 +122,7 @@ window.history = {
   replaceState: jest.fn(),
   go: jest.fn(),
   back: jest.fn(),
-  forward: jest.fn()
+  forward: jest.fn(),
 };
 
 // Mock window.navigator
@@ -134,7 +134,7 @@ window.navigator = {
   platform: 'Test Platform',
   onLine: true,
   cookieEnabled: true,
-  getGamepads: jest.fn(() => [])
+  getGamepads: jest.fn(() => []),
 };
 
 // Mock window.screen
@@ -144,11 +144,11 @@ window.screen = {
   availWidth: 1920,
   availHeight: 1040,
   colorDepth: 24,
-  pixelDepth: 24
+  pixelDepth: 24,
 };
 
 // Mock window.matchMedia
-window.matchMedia = jest.fn(query => ({
+window.matchMedia = jest.fn((query) => ({
   matches: false,
   media: query,
   onchange: null,
@@ -156,14 +156,14 @@ window.matchMedia = jest.fn(query => ({
   removeListener: jest.fn(),
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
-  dispatchEvent: jest.fn()
+  dispatchEvent: jest.fn(),
 }));
 
 // Mock window.getComputedStyle
 window.getComputedStyle = jest.fn(() => ({
   getPropertyValue: jest.fn(() => ''),
   setProperty: jest.fn(),
-  removeProperty: jest.fn()
+  removeProperty: jest.fn(),
 }));
 
 // Mock document methods
@@ -196,10 +196,10 @@ document.createElement = jest.fn((tagName) => {
       bottom: 0,
       right: 0,
       width: 0,
-      height: 0
-    }))
+      height: 0,
+    })),
   };
-  
+
   return element;
 });
 
@@ -221,7 +221,7 @@ global.HTMLElement = class HTMLElement {
     this.children = [];
     this.parentNode = null;
   }
-  
+
   appendChild() {}
   removeChild() {}
   addEventListener() {}
@@ -235,7 +235,9 @@ global.HTMLElement = class HTMLElement {
   removeAttribute() {}
   hasAttribute() {}
   querySelector() {}
-  querySelectorAll() { return []; }
+  querySelectorAll() {
+    return [];
+  }
   getBoundingClientRect() {
     return {
       top: 0,
@@ -243,7 +245,7 @@ global.HTMLElement = class HTMLElement {
       bottom: 0,
       right: 0,
       width: 0,
-      height: 0
+      height: 0,
     };
   }
 };
