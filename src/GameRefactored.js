@@ -18,6 +18,8 @@ import { Logger } from './utils/Logger.js';
 import { PerformanceMonitor } from './core/PerformanceMonitor.js';
 import { InputManager } from './core/InputManager.js';
 import { MobileTesting } from './utils/MobileTesting.js';
+import { SettingsUI } from './ui/SettingsUI.js';
+import { AudioSystem } from './systems/AudioSystem.js';
 
 export class GameRefactored {
   constructor(config = {}) {
@@ -122,6 +124,11 @@ export class GameRefactored {
       config: this.config,
     });
 
+    // UI and Audio systems
+    this.ui = {};
+    this.systems = {};
+    this.initializeUISystems();
+
     // Assert managers were initialized
     if (!this.managers.game) {
       throw new Error('GameRefactored: GameManager initialization failed');
@@ -140,6 +147,14 @@ export class GameRefactored {
       throw new Error(
         'GameRefactored: AccessibilityManager initialization failed when enabled'
       );
+    }
+
+    // Assert UI and audio systems were initialized
+    if (!this.ui.settings) {
+      throw new Error('GameRefactored: SettingsUI initialization failed');
+    }
+    if (!this.systems.audio) {
+      throw new Error('GameRefactored: AudioSystem initialization failed');
     }
 
     // Bind methods - with assertions
@@ -223,6 +238,48 @@ export class GameRefactored {
   }
 
   /**
+   * Initialize UI and Audio systems
+   */
+  initializeUISystems() {
+    // Settings UI
+    this.ui.settings = new SettingsUI({
+      eventBus: this.eventBus,
+      logger: this.logger,
+      container: document.body
+    });
+
+    // Audio System
+    this.systems.audio = new AudioSystem({
+      eventBus: this.eventBus,
+      logger: this.logger
+    });
+
+    // Set up UI and audio integration
+    this.setupUIIntegration();
+  }
+
+  /**
+   * Set up UI and audio integration
+   */
+  setupUIIntegration() {
+    // Settings changes should update audio system
+    this.eventBus.on('settings:changed', (data) => {
+      if (data.path.startsWith('audio.')) {
+        // Audio settings are handled by AudioSystem directly
+        this.logger.debug(`Audio setting changed: ${data.path} = ${data.value}`);
+      }
+    });
+
+    // Game state changes should update UI
+    this.eventBus.on('game:stateChanged', (data) => {
+      if (this.ui.settings) {
+        // Update UI based on game state changes
+        this.logger.debug(`Game state changed: ${JSON.stringify(data)}`);
+      }
+    });
+  }
+
+  /**
    * Set up communication between managers
    */
   setupManagerCommunication() {
@@ -231,6 +288,8 @@ export class GameRefactored {
       if (this.managers.achievements) {
         this.managers.achievements.checkScoreAchievements(data.score);
       }
+      // Update UI with score change
+      this.updateUI('score', data.score);
     });
 
     this.eventBus.on('player:levelCompleted', (data) => {
@@ -240,6 +299,8 @@ export class GameRefactored {
       if (this.managers.dailyChallenges) {
         this.managers.dailyChallenges.checkLevelChallenge(data.level);
       }
+      // Update UI with level completion
+      this.updateUI('level', data.level);
     });
 
     this.eventBus.on('player:itemCollected', (data) => {
@@ -249,6 +310,8 @@ export class GameRefactored {
       if (this.managers.dailyChallenges) {
         this.managers.dailyChallenges.checkCollectionChallenge(data.itemType);
       }
+      // Update UI with item collection
+      this.updateUI('item', data.itemType);
     });
 
     // Accessibility events
@@ -264,6 +327,8 @@ export class GameRefactored {
       if (this.managers.game) {
         this.managers.game.handleAchievementUnlock(data);
       }
+      // Update UI with achievement
+      this.updateUI('achievement', data);
     });
 
     // Daily challenge events
@@ -272,7 +337,143 @@ export class GameRefactored {
       if (this.managers.game) {
         this.managers.game.handleDailyChallengeCompletion(data);
       }
+      // Update UI with challenge completion
+      this.updateUI('challenge', data);
     });
+
+    // Power-up events
+    this.eventBus.on('powerup:activated', (data) => {
+      this.gameState.activePowerUps.set(data.type, {
+        ...data,
+        startTime: Date.now(),
+        duration: data.duration || 10000 // 10 seconds default
+      });
+      this.updateUI('powerup', data);
+    });
+
+    this.eventBus.on('powerup:expired', (data) => {
+      this.gameState.activePowerUps.delete(data.type);
+      this.updateUI('powerupExpired', data);
+    });
+
+    // Console/Play integration events
+    this.eventBus.on('console:command', (data) => {
+      this.handleConsoleCommand(data);
+    });
+
+    this.eventBus.on('play:action', (data) => {
+      this.handlePlayAction(data);
+    });
+  }
+
+  /**
+   * Update UI with game state changes
+   */
+  updateUI(type, data) {
+    // This method provides a centralized way to update UI elements
+    // based on game state changes
+    this.eventBus.emit('ui:update', {
+      type,
+      data,
+      timestamp: Date.now()
+    });
+  }
+
+  /**
+   * Handle console commands for debugging and testing
+   */
+  handleConsoleCommand(data) {
+    const { command, args } = data;
+    
+    switch (command) {
+      case 'setScore':
+        this.gameState.score = parseInt(args[0]) || 0;
+        this.eventBus.emit('player:scoreChanged', { score: this.gameState.score });
+        this.logger.info(`Console: Score set to ${this.gameState.score}`);
+        break;
+        
+      case 'setLevel':
+        this.gameState.currentLevel = parseInt(args[0]) || 1;
+        this.eventBus.emit('player:levelCompleted', { level: this.gameState.currentLevel });
+        this.logger.info(`Console: Level set to ${this.gameState.currentLevel}`);
+        break;
+        
+      case 'addPowerUp':
+        const powerUpType = args[0] || 'speed';
+        this.eventBus.emit('powerup:activated', { 
+          type: powerUpType, 
+          duration: 10000 
+        });
+        this.logger.info(`Console: Power-up ${powerUpType} added`);
+        break;
+        
+      case 'unlockAchievement':
+        const achievementName = args[0] || 'test';
+        this.eventBus.emit('achievement:unlocked', { 
+          name: achievementName,
+          description: 'Console unlocked achievement'
+        });
+        this.logger.info(`Console: Achievement ${achievementName} unlocked`);
+        break;
+        
+      case 'toggleSettings':
+        if (this.ui.settings) {
+          this.ui.settings.toggle();
+        }
+        break;
+        
+      case 'muteAudio':
+        if (this.systems.audio) {
+          this.systems.audio.muteAll();
+        }
+        break;
+        
+      case 'unmuteAudio':
+        if (this.systems.audio) {
+          this.systems.audio.unmuteAll();
+        }
+        break;
+        
+      default:
+        this.logger.warn(`Console: Unknown command: ${command}`);
+    }
+  }
+
+  /**
+   * Handle play actions for game interaction
+   */
+  handlePlayAction(data) {
+    const { action, params } = data;
+    
+    switch (action) {
+      case 'jump':
+        this.eventBus.emit('player:jump', params);
+        break;
+        
+      case 'collect':
+        this.eventBus.emit('player:collect', params);
+        break;
+        
+      case 'damage':
+        this.eventBus.emit('player:damage', params);
+        break;
+        
+      case 'pause':
+        this.pause();
+        break;
+        
+      case 'resume':
+        this.resume();
+        break;
+        
+      case 'restart':
+        this.stop();
+        this.start();
+        break;
+        
+      default:
+        this.logger.warn(`Play: Unknown action: ${action}`);
+    }
   }
 
   /**
@@ -304,6 +505,11 @@ export class GameRefactored {
         await this.mobileTesting.initialize();
       }
 
+      // Initialize UI and audio systems
+      if (this.systems.audio && this.systems.audio.initialize) {
+        await this.systems.audio.initialize();
+      }
+
       // Set up game state
       this.gameState.isRunning = true;
       this.gameState.startTime = Date.now();
@@ -317,6 +523,11 @@ export class GameRefactored {
         timestamp: this.gameState.startTime,
         config: this.config,
       });
+
+      // Start background music
+      if (this.systems.audio) {
+        this.systems.audio.playMusic('mainTheme');
+      }
 
       this.logger.info('Game started successfully');
     } catch (error) {
@@ -582,6 +793,74 @@ export class GameRefactored {
   }
 
   /**
+   * Get UI system by name
+   */
+  getUI(name) {
+    return this.ui[name];
+  }
+
+  /**
+   * Get system by name
+   */
+  getSystem(name) {
+    return this.systems[name];
+  }
+
+  /**
+   * Get all active power-ups
+   */
+  getActivePowerUps() {
+    const now = Date.now();
+    const active = [];
+    
+    for (const [type, powerUp] of this.gameState.activePowerUps) {
+      if (now - powerUp.startTime < powerUp.duration) {
+        active.push({
+          type,
+          ...powerUp,
+          remainingTime: powerUp.duration - (now - powerUp.startTime)
+        });
+      } else {
+        // Power-up expired
+        this.gameState.activePowerUps.delete(type);
+        this.eventBus.emit('powerup:expired', { type });
+      }
+    }
+    
+    return active;
+  }
+
+  /**
+   * Execute console command (for external access)
+   */
+  executeConsoleCommand(command, ...args) {
+    this.eventBus.emit('console:command', { command, args });
+  }
+
+  /**
+   * Execute play action (for external access)
+   */
+  executePlayAction(action, params = {}) {
+    this.eventBus.emit('play:action', { action, params });
+  }
+
+  /**
+   * Get game statistics
+   */
+  getGameStats() {
+    return {
+      score: this.gameState.score,
+      level: this.gameState.currentLevel,
+      isRunning: this.gameState.isRunning,
+      isPaused: this.gameState.isPaused,
+      gameTime: this.gameState.startTime ? Date.now() - this.gameState.startTime : 0,
+      activePowerUps: this.getActivePowerUps(),
+      achievements: this.managers.achievements ? this.managers.achievements.getAllAchievements() : [],
+      challenges: this.managers.dailyChallenges ? this.managers.dailyChallenges.getActiveChallenges() : []
+    };
+  }
+
+  /**
    * Update game configuration
    */
   updateConfig(newConfig) {
@@ -600,12 +879,24 @@ export class GameRefactored {
   destroy() {
     this.stop();
 
+    // Cleanup UI systems
+    if (this.ui.settings) {
+      this.ui.settings.cleanup();
+    }
+
+    // Cleanup audio systems
+    if (this.systems.audio) {
+      this.systems.audio.cleanup();
+    }
+
     // Clear all event listeners
-    this.eventBus.removeAllListeners();
+    this.eventBus.removeAllListeners(); // Remove all listeners (no event parameter)
 
     // Clear game state
     this.gameState = null;
     this.managers = null;
+    this.ui = null;
+    this.systems = null;
 
     this.logger.info('GameRefactored destroyed');
   }

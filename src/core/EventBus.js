@@ -90,6 +90,13 @@ export class EventBus {
   }
 
   /**
+   * Alias for off method for backward compatibility
+   */
+  removeListener(event, callback) {
+    return this.off(event, callback);
+  }
+
+  /**
    * Emit an event
    */
   emit(event, data = {}) {
