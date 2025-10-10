@@ -1,0 +1,110 @@
+name: CI Unity
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'Unity/**'
+      - 'Assets/**'
+      - '.github/workflows/ci-unity.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'Unity/**'
+      - 'Assets/**'
+      - '.github/workflows/ci-unity.yml'
+
+jobs:
+  unity-test:
+    name: Unity Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check for Unity project
+      id: check-unity
+      run: |
+        if [ -d "Unity" ] || [ -d "Assets" ]; then
+          echo "unity-project=true" >> $GITHUB_OUTPUT
+          echo "Unity project found"
+        else
+          echo "unity-project=false" >> $GITHUB_OUTPUT
+          echo "No Unity project found - skipping Unity tests"
+        fi
+        
+    - name: Setup Unity
+      if: steps.check-unity.outputs.unity-project == 'true'
+      uses: game-ci/unity-setup@v2
+      with:
+        unity-version: '2022.3.15f1'
+        
+    - name: Cache Unity Library
+      if: steps.check-unity.outputs.unity-project == 'true'
+      uses: actions/cache@v3
+      with:
+        path: Unity/Library
+        key: Library-${{ hashFiles('Unity/Assets/**', 'Unity/Packages/**') }}
+        restore-keys: |
+          Library-
+          
+    - name: Run Unity Edit Mode Tests
+      if: steps.check-unity.outputs.unity-project == 'true'
+      uses: game-ci/unity-test-runner@v2
+      env:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      with:
+        projectPath: Unity
+        testMode: editMode
+        artifactsPath: artifacts/unity-test-results
+        
+    - name: Run Unity Play Mode Tests
+      if: steps.check-unity.outputs.unity-project == 'true'
+      uses: game-ci/unity-test-runner@v2
+      env:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      with:
+        projectPath: Unity
+        testMode: playMode
+        artifactsPath: artifacts/unity-test-results
+        
+    - name: Upload Unity Test Results
+      if: always() && steps.check-unity.outputs.unity-project == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: unity-test-results
+        path: artifacts/unity-test-results/
+        retention-days: 30
+        
+    - name: Unity Build
+      if: steps.check-unity.outputs.unity-project == 'true'
+      uses: game-ci/unity-builder@v2
+      env:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      with:
+        projectPath: Unity
+        buildName: TotTrots-Unity
+        buildPath: build
+        targetPlatform: StandaloneWindows64
+        
+    - name: Upload Unity Build
+      if: steps.check-unity.outputs.unity-project == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: unity-build
+        path: build/
+        retention-days: 30
+        
+    - name: Skip Unity Tests (No Project)
+      if: steps.check-unity.outputs.unity-project == 'false'
+      run: |
+        echo "No Unity project found in repository"
+        echo "Unity CI will be skipped until Unity project is added"
+        echo "See Docs/UNITY_BOOTSTRAP.md for setup instructions"

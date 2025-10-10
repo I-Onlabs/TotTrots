@@ -1,6 +1,29 @@
 # TotTrots - Advanced Game Architecture & ARPG System
 
+[![CI Web](https://github.com/your-org/tottrots-game/actions/workflows/ci-web.yml/badge.svg)](https://github.com/your-org/tottrots-game/actions/workflows/ci-web.yml)
+[![CI Unity](https://github.com/your-org/tottrots-game/actions/workflows/ci-unity.yml/badge.svg)](https://github.com/your-org/tottrots-game/actions/workflows/ci-unity.yml)
+[![Test Coverage](https://codecov.io/gh/your-org/tottrots-game/branch/main/graph/badge.svg)](https://codecov.io/gh/your-org/tottrots-game)
+
 A comprehensive game architecture refactoring project featuring modular design, ARPG integration, cross-cutting concerns, advanced accessibility features, performance monitoring, and mobile UX optimization.
+
+## 🎯 Project Scopes
+
+### Web Canvas Prototype
+The main web-based game implementation featuring:
+- **Modular Component Architecture** with explicit lifecycle management
+- **Dependency Injection** for loose coupling and testability
+- **ARPG Integration** with deep character customization and procedural content
+- **Cross-cutting Features** integration (achievements, daily challenges, accessibility)
+- **Event-driven Architecture** with centralized event management
+- **Performance Monitoring** with real-time metrics and optimization
+- **Mobile UX Excellence** with touch controls and gesture recognition
+
+### Unity Scripts
+Unity-specific components and systems (coming soon):
+- Unity LTS version requirements and setup
+- Edit-mode testing framework
+- Scene setup and configuration
+- Package dependencies and requirements
 
 ## 🎮 Project Overview
 
@@ -244,6 +267,64 @@ src/
     ├── Logger.js             # Logging utility
     └── MobileTesting.js      # Mobile testing utilities
 ```
+
+## 📁 What Lives Where
+
+### Web Canvas Prototype
+- **Entry Point**: `public/index.html` - Main HTML entry with game initialization
+- **Core Game**: `src/GameRefactored.js` - Main game controller and orchestrator
+- **Systems**: `src/systems/` - Game systems (Combat, Audio, UI, etc.)
+- **Managers**: `src/managers/` - Feature managers (Achievements, Challenges, etc.)
+- **Core**: `src/core/` - Core utilities (EventBus, ConfigManager, etc.)
+- **Styles**: `src/styles/` - CSS files for styling and mobile controls
+- **Tests**: `tests/` - Jest test suites and Playwright smoke tests
+
+### Unity Scripts
+- **Documentation**: `Docs/UNITY_BOOTSTRAP.md` - Unity setup and requirements
+- **Scripts**: `Assets/Scripts/` - Unity C# scripts (to be created)
+- **Scenes**: `Assets/Scenes/` - Unity scene files (to be created)
+- **Tests**: `Assets/Tests/` - Unity edit-mode tests (to be created)
+
+## 🚀 Quick Start
+
+### Web Canvas Prototype
+
+#### Prerequisites
+- Node.js 16+ and npm 8+
+- Modern browser with ES6+ support
+
+#### Local Development
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run tests
+npm test
+
+# Build for production
+npm run build
+```
+
+#### Production Deployment
+```bash
+# Build and serve
+npm run build
+npm run serve
+```
+
+### Unity Scripts
+
+#### Prerequisites
+- Unity LTS 2022.3.x or later
+- Unity Test Framework package
+
+#### Setup
+1. Follow instructions in `Docs/UNITY_BOOTSTRAP.md`
+2. Import required packages
+3. Set up test scenes as documented
 
 ## 🛠️ Usage
 

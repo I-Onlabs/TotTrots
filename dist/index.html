@@ -7,11 +7,9 @@
     <meta name="description" content="A comprehensive game architecture refactoring project featuring modular design, cross-cutting concerns integration, and advanced accessibility features">
     
     <!-- Preload critical resources -->
-    <link rel="preload" href="/src/styles/main.css" as="style">
-    <link rel="preload" href="/src/GameRefactored.js" as="script">
+    <link rel="preload" href="/assets/GameRefactored-DDolSgN7.js" as="script">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="/src/styles/main.css">
     
     <!-- Accessibility meta tags -->
     <meta name="theme-color" content="#2563eb">
@@ -27,6 +25,10 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="TotTrots - Game Refactored">
     <meta name="twitter:description" content="A comprehensive game architecture refactoring project">
+  <script type="module" crossorigin src="/assets/main-pC-LDj-s.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-DGSTi3Ss.css">
+  <script type="module">import.meta.url;import("_").catch(()=>1);(async function*(){})().next();window.__vite_is_modern_browser=true</script>
+  <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
 </head>
 <body>
     <!-- Skip links for accessibility -->
@@ -223,221 +225,8 @@
     <div id="game-status" class="game-status" aria-live="polite" aria-label="Game status"></div>
     
     <!-- Scripts -->
-    <script type="module" src="/src/GameRefactored.js"></script>
-    <script type="module">
-        // Initialize the game when the page loads
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                // Show loading screen
-                const loadingScreen = document.getElementById('loading-screen');
-                loadingScreen.style.display = 'flex';
-                
-                // Import and initialize the game
-                const { GameRefactored } = await import('/src/GameRefactored.js');
-                
-                // Create game instance
-                const game = new GameRefactored({
-                    debug: true,
-                    enableAchievements: true,
-                    enableDailyChallenges: true,
-                    enableAccessibility: true
-                });
-                
-                // Set up UI event handlers
-                setupUIEventHandlers(game);
-                
-                // Start the game
-                await game.start();
-                
-                // Hide loading screen
-                loadingScreen.style.display = 'none';
-                
-                // Focus on game area
-                document.getElementById('game-area').focus();
-                
-                console.log('Game initialized successfully');
-            } catch (error) {
-                console.error('Failed to initialize game:', error);
-                document.getElementById('loading-screen').innerHTML = 
-                    '<div class="error-content"><h2>Failed to load game</h2><p>Please refresh the page to try again.</p></div>';
-            }
-        });
-        
-        // Set up UI event handlers
-        function setupUIEventHandlers(game) {
-            // Pause menu handlers
-            document.getElementById('resume-btn').addEventListener('click', () => {
-                game.resume();
-                hidePauseMenu();
-            });
-            
-            document.getElementById('settings-btn').addEventListener('click', () => {
-                hidePauseMenu();
-                showSettingsMenu();
-            });
-            
-            document.getElementById('main-menu-btn').addEventListener('click', () => {
-                game.pause();
-                hidePauseMenu();
-                showMainMenu();
-            });
-            
-            // Settings menu handlers
-            document.getElementById('save-settings-btn').addEventListener('click', () => {
-                saveSettings(game);
-                hideSettingsMenu();
-            });
-            
-            document.getElementById('cancel-settings-btn').addEventListener('click', () => {
-                hideSettingsMenu();
-            });
-            
-            // Main menu handlers
-            document.getElementById('start-game-btn').addEventListener('click', () => {
-                hideMainMenu();
-                game.resume();
-            });
-            
-            document.getElementById('settings-menu-btn').addEventListener('click', () => {
-                hideMainMenu();
-                showSettingsMenu();
-            });
-            
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape') {
-                    if (isMenuVisible('settings-menu')) {
-                        hideSettingsMenu();
-                    } else if (isMenuVisible('main-menu')) {
-                        hideMainMenu();
-                    } else if (isMenuVisible('pause-menu')) {
-                        hidePauseMenu();
-                    } else {
-                        game.pause();
-                        showPauseMenu();
-                    }
-                }
-            });
-            
-            // Accessibility settings handlers
-            setupAccessibilityHandlers(game);
-        }
-        
-        // Menu visibility functions
-        function showPauseMenu() {
-            document.getElementById('pause-menu').style.display = 'block';
-            document.getElementById('pause-menu').setAttribute('aria-hidden', 'false');
-            document.getElementById('resume-btn').focus();
-        }
-        
-        function hidePauseMenu() {
-            document.getElementById('pause-menu').style.display = 'none';
-            document.getElementById('pause-menu').setAttribute('aria-hidden', 'true');
-        }
-        
-        function showSettingsMenu() {
-            document.getElementById('settings-menu').style.display = 'block';
-            document.getElementById('settings-menu').setAttribute('aria-hidden', 'false');
-            document.getElementById('save-settings-btn').focus();
-        }
-        
-        function hideSettingsMenu() {
-            document.getElementById('settings-menu').style.display = 'none';
-            document.getElementById('settings-menu').setAttribute('aria-hidden', 'true');
-        }
-        
-        function showMainMenu() {
-            document.getElementById('main-menu').style.display = 'block';
-            document.getElementById('main-menu').setAttribute('aria-hidden', 'false');
-            document.getElementById('start-game-btn').focus();
-        }
-        
-        function hideMainMenu() {
-            document.getElementById('main-menu').style.display = 'none';
-            document.getElementById('main-menu').setAttribute('aria-hidden', 'true');
-        }
-        
-        function isMenuVisible(menuId) {
-            const menu = document.getElementById(menuId);
-            return menu.style.display !== 'none' && menu.getAttribute('aria-hidden') !== 'true';
-        }
-        
-        // Settings handlers
-        function saveSettings(game) {
-            const settings = {
-                debug: document.getElementById('debug-toggle').checked,
-                enableAchievements: document.getElementById('achievements-toggle').checked,
-                enableDailyChallenges: document.getElementById('challenges-toggle').checked,
-                screenReader: document.getElementById('screen-reader-toggle').checked,
-                highContrast: document.getElementById('high-contrast-toggle').checked,
-                colorblindMode: document.getElementById('colorblind-select').value,
-                textScaling: parseFloat(document.getElementById('text-scaling-slider').value),
-                motionReduction: document.getElementById('motion-reduction-toggle').checked,
-                masterVolume: parseFloat(document.getElementById('master-volume-slider').value),
-                sfxVolume: parseFloat(document.getElementById('sfx-volume-slider').value),
-                musicVolume: parseFloat(document.getElementById('music-volume-slider').value)
-            };
-            
-            // Update game configuration
-            game.updateConfig(settings);
-            
-            // Apply accessibility settings
-            applyAccessibilitySettings(settings);
-        }
-        
-        // Accessibility handlers
-        function setupAccessibilityHandlers(game) {
-            // Screen reader toggle
-            document.getElementById('screen-reader-toggle').addEventListener('change', (event) => {
-                const enabled = event.target.checked;
-                game.getManager('accessibility')?.updateSettings({ screenReader: enabled });
-            });
-            
-            // High contrast toggle
-            document.getElementById('high-contrast-toggle').addEventListener('change', (event) => {
-                const enabled = event.target.checked;
-                document.documentElement.classList.toggle('high-contrast', enabled);
-            });
-            
-            // Colorblind mode
-            document.getElementById('colorblind-select').addEventListener('change', (event) => {
-                const mode = event.target.value;
-                document.documentElement.className = document.documentElement.className.replace(/colorblind-\w+/g, '');
-                if (mode !== 'none') {
-                    document.documentElement.classList.add(`colorblind-${mode}`);
-                }
-            });
-            
-            // Text scaling
-            document.getElementById('text-scaling-slider').addEventListener('input', (event) => {
-                const scale = parseFloat(event.target.value);
-                document.documentElement.style.setProperty('--text-scale', scale);
-            });
-            
-            // Motion reduction
-            document.getElementById('motion-reduction-toggle').addEventListener('change', (event) => {
-                const enabled = event.target.checked;
-                document.documentElement.classList.toggle('motion-reduced', enabled);
-            });
-        }
-        
-        // Apply accessibility settings
-        function applyAccessibilitySettings(settings) {
-            // Apply high contrast
-            document.documentElement.classList.toggle('high-contrast', settings.highContrast);
-            
-            // Apply colorblind mode
-            document.documentElement.className = document.documentElement.className.replace(/colorblind-\w+/g, '');
-            if (settings.colorblindMode !== 'none') {
-                document.documentElement.classList.add(`colorblind-${settings.colorblindMode}`);
-            }
-            
-            // Apply text scaling
-            document.documentElement.style.setProperty('--text-scale', settings.textScaling);
-            
-            // Apply motion reduction
-            document.documentElement.classList.toggle('motion-reduced', settings.motionReduction);
-        }
-    </script>
+  <script nomodule>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
+  <script nomodule crossorigin id="vite-legacy-polyfill" src="/assets/polyfills-legacy-BzziPKwa.js"></script>
+  <script nomodule crossorigin id="vite-legacy-entry" data-src="/assets/main-legacy-ZchdoiSE.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
 </body>
 </html>
